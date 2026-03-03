@@ -89,7 +89,7 @@ export default function UserMenu() {
                         role="menuitem"
                         onClick={() => signOut({ callbackUrl: "/" })}
                     >
-                        Sign out
+                        Log out
                     </button>
                 </div>
             )}
