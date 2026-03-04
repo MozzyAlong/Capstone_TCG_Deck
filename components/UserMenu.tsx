@@ -42,11 +42,11 @@ export default function UserMenu() {
 
     //https://react.dev/reference/react/useRef
     return (
-        <div className="relative" ref={wrapRef}>
+        <div className="relative " ref={wrapRef}>
             <button
                 type="button"
                 onClick={() => setOpen((v) => !v)}
-                className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-semibold text-gray-200 hover:bg-white/5"
+                className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-semibold text-gray-200 hover:bg-white/5 cursor-pointer"
                 aria-haspopup="menu"
                 aria-expanded={open}
             >
@@ -66,7 +66,7 @@ export default function UserMenu() {
                 <div role="menu" className="absolute right-0 mt-2 w-52 origin-top-right rounded-md bg-gray-800 py-1 outline -outline-offset-1 outline-white/10 shadow-xl"
                 >
                     <Link
-                        href="/profile"
+                        href={`/profile/${(session.user as any).id}`}
                         className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5"
                         role="menuitem"
                         onClick={() => setOpen(false)}
