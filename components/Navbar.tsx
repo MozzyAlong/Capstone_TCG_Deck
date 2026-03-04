@@ -12,7 +12,7 @@ export default function Navbar({ links }: { links: string[] }) {
 
     return (
         <nav className="sticky top-0 z-50 bg-gray-800 border-b border-white/10">
-            <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex h-16 items-center justify-between px-4">
                 <div className="flex gap-4">
                     {links.map((link) => {
                         const href = link === "Deck AI" ? "/" : `/${link.toLowerCase()}`
