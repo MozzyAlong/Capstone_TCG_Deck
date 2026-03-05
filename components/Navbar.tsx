@@ -11,8 +11,8 @@ export default function Navbar({ links }: { links: string[] }) {
     const loading = status === "loading"
 
     return (
-        <nav className="sticky top-0 z-50 bg-gray-800/50 border-b border-white/10">
-            <div className="flex items-center justify-between px-4 py-3">
+        <nav className="sticky top-0 z-50 bg-gray-800 border-b border-white/10">
+            <div className="flex h-16 items-center justify-between px-4">
                 <div className="flex gap-4">
                     {links.map((link) => {
                         const href = link === "Deck AI" ? "/" : `/${link.toLowerCase()}`
@@ -21,7 +21,7 @@ export default function Navbar({ links }: { links: string[] }) {
                         return (
                             <Link
                                 key={href}
-                                className={`rounded-md px-3 py-2 text-sm font-semibold text-gray-300 transition hover:bg-white/5 hover:text-white 
+                                className={`rounded-md px-3 py-2 text-sm font-semibold text-gray-300 transition hover:bg-white/5 hover:text-white  
                                             ${isActive ? "bg-gray-950/50 text-white" : ""}`}
                                 href={href}
                                 aria-current={isActive ? "page" : undefined}
