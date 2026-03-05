@@ -138,7 +138,7 @@ export default function EditProfile() {
                                 onChange={(e) => setBio(e.target.value)}
                                 maxLength={280}
                                 placeholder="Write a short bio..."
-                                className="w-full min-h-30 rounded-lg bg-gray-900/50 border border-white/10 px-3 py-2 text-sm text-white placeholder-gray-400focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full min-h-30 rounded-lg bg-gray-900/50 border border-white/10 px-3 py-2 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             <div className="mt-1 text-xs text-gray-400">
                                 {bio.length}/280
@@ -151,7 +151,7 @@ export default function EditProfile() {
                             <button
                                 type="submit"
                                 disabled={saving}
-                                className="rounded-lg px-4 py-2 text-sm font-semibold transition border border-white/10 bg-blue-500/20 hover:bg-blue-500/30 cursor-pointertext-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="rounded-lg px-4 py-2 text-sm font-semibold transition border border-white/10 bg-blue-500/20 hover:bg-blue-500/30 cursor-pointertext-white disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
                             >
                                 {saving ? "Saving" : "Save changes"}
                             </button>
