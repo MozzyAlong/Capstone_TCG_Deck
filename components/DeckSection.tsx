@@ -11,14 +11,15 @@ type DeckSectionProps = {
     decks: DeckInfo[]
     isExpanded: boolean
     onToggle: () => void
+    onDeckDeleted: (deckId: string) => void
 }
 
-export default function DeckSection({gameKey, decks, isExpanded, onToggle}: DeckSectionProps) {
+export default function DeckSection({gameKey, decks, isExpanded, onToggle, onDeckDeleted}: DeckSectionProps) {
     const gameDisplayName = GAME_DISPLAY_NAMES[gameKey] ?? gameKey.toUpperCase() //gameid/key if the good display name doesnt exist
 
     return (
         <div className="space-y-5">
-            <button onClick={onToggle} className="w-full flex items-center gap-4 text-left group">
+            <button onClick={onToggle} className="w-full flex items-center gap-4 text-left group cursor-pointer">
         <span className="text-sm uppercase tracking-wide text-gray-300">
           {gameDisplayName}
         </span>
@@ -32,7 +33,7 @@ export default function DeckSection({gameKey, decks, isExpanded, onToggle}: Deck
             {isExpanded && (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {decks.map((deck) => (
-                        <DeckCard key={deck.id} deck={deck} />
+                        <DeckCard key={deck.id} deck={deck} onDeleted={onDeckDeleted} />
                     ))}
                 </div>
             )}

@@ -15,14 +15,13 @@ type CreateDeckBody = {
     // Game formats, standard for now will decide how we handle other modes in the future
     format?: string
 
-    // private: only the deck owner can view
+    // private: only the decks owner can view
     // unlisted: can be viewed if someone has a link but wont be shown on other pages
     // public: publicly available
     visibility?: "private" | "unlisted" | "public"
 }
 
 const ALLOWED_GAMES = new Set(["pokemon"])  // pokemon first, probably MTG second? havent decided
-const ALLOWED_VISIBILITY = new Set(["private", "unlisted", "public"])
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const session = await getServerSession(req, res, authOptions)
@@ -35,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const db = client.db()
     const ownerObjectId = new ObjectId(userId)
 
-    // list personal deck
+    // list personal decks
     if (req.method === "GET") {
         const decks = await db
             .collection("decks")
@@ -56,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         })
     }
 
-    // deck creation
+    // decks creation
     if (req.method === "POST") {
         // body is the request body
         const body = (req.body ?? {}) as CreateDeckBody
@@ -72,10 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (title.length > 60) return res.status(400).json({ error: "Deck title is too long" })
         if (!game) return res.status(400).json({ error: "Game is required" })
         if (game.length > 32) return res.status(400).json({ error: "Invalid game" })
-        if (!ALLOWED_GAMES.has(game)) return res.status(400).json({ error: "Unsupported game" })
-        if (visibility && !ALLOWED_VISIBILITY.has(visibility)) {
-            return res.status(400).json({ error: "Invalid visibility" })
-        }
+        if (!ALLOWED_GAMES.has(game)) return res.status(400).json({ error: "Unsupported game" }) // just in case
 
         const now = new Date()
 

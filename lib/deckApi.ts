@@ -41,3 +41,11 @@ export async function createDeckApiRequest(payload: {
 
     return (await response.json()) as DeckCreateApiResponse
 }
+
+export async function deleteDeck(deckId: string) {
+    const response = await fetch(`/api/deck/${deckId}`, {
+        method: "DELETE",
+    })
+
+    return await response.json()
+}

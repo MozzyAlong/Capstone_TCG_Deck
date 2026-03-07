@@ -97,7 +97,7 @@ export default function login() {
                     </>
                 ) : (
                     <div className="space-y-3">
-                        <p>Logged in</p> {/* unreachable because of middleware but just in case */}
+                        <p>Logged in</p> {/* unreachable because of proxy but just in case */}
                     </div>
                 )}
             </div>
