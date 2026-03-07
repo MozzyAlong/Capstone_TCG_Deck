@@ -9,6 +9,8 @@ type DeckCardProps = {
     deck: DeckInfo
 }
 
+// This component is for the deck "cards" that will display on the deck list page
+// not an actual card like a pokemon card
 export default function DeckCard({ deck }: DeckCardProps) {
     const gameDisplayName = GAME_DISPLAY_NAMES[deck.game] ?? deck.game
 
