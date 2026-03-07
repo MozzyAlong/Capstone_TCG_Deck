@@ -35,7 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const db = client.db()
     const ownerObjectId = new ObjectId(userId)
 
-    // list personal decks
+    // list personal deck
     if (req.method === "GET") {
         const decks = await db
             .collection("decks")
