@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const userId = (session?.user as any)?.id as string | undefined
 
     if (!userId) {
-        return res.status(401).json({ error: "Unauthorized" }) //double check even though in middleware
+        return res.status(401).json({ error: "Unauthorized" }) //double check even though in proxy
     }
 
     const { name, bio } = req.body as {
@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ error: "Name too long" })
     }
 
-    if (cleanBio && cleanBio.length > 280) {
+    if (cleanBio && cleanBio.length > 256) {
         return res.status(400).json({ error: "Bio too long" })
     }
 

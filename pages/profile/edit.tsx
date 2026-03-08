@@ -56,6 +56,7 @@ export default function EditProfile() {
     if (status === "loading") return null
     if (status !== "authenticated") return null
 
+    // If no name, then email name before @, if no email (just incase of db error) then "unnamed user"
     const displayName = name?.trim() || session.user?.name || session.user?.email?.split("@")[0] || "Unnamed User"
 
     const avatarUrl = serverImage ?? session.user?.image ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=1f2937&color=ffffff`
@@ -136,12 +137,12 @@ export default function EditProfile() {
                             <textarea
                                 value={bio}
                                 onChange={(e) => setBio(e.target.value)}
-                                maxLength={280}
+                                maxLength={256}
                                 placeholder="Write a short bio..."
                                 className="w-full min-h-30 rounded-lg bg-gray-900/50 border border-white/10 px-3 py-2 text-sm text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             <div className="mt-1 text-xs text-gray-400">
-                                {bio.length}/280
+                                {bio.length}/256
                             </div>
                         </div>
 
