@@ -117,9 +117,6 @@ export default function DeckCreatePage() {
                         <h1 className="text-3xl font-semibold">
                             Decks
                         </h1>
-                        <p className="mt-1 text-sm text-gray-300">
-                            Manage your decks by game.
-                        </p>
                         <div className="mt-2 text-xs text-gray-400">
                             {pageIsLoading ? (
                                 <>Loading</>
