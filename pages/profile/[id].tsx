@@ -1,7 +1,8 @@
 import type { GetServerSideProps } from "next"
 import clientPromise from "@/lib/db"
 import { ObjectId } from "mongodb"
-import { getSession } from "next-auth/react"
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "../api/auth/[...nextauth]"
 import Link from "next/link"
 
 type ProfileProps = {
@@ -59,9 +60,9 @@ export default function Profile({ user, isOwner }: ProfileProps) {
 
             <div className="mx-auto max-w-4xl px-6 py-10">
                 <div className="space-y-8">
-
-                    {/* bio */}
                     <div>
+
+                        {/* bio */}
                         <h2 className="text-sm uppercase tracking-wide text-gray-400 mb-2">
                             Bio
                         </h2>
@@ -101,8 +102,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         return { notFound: true }
     }
 
-    const session = await getSession(context)
-    const sessionUserId = (session?.user as any)?.id
+    const session = await getServerSession(context.req, context.res, authOptions)
+    const sessionUserId = (session?.user as any)?.id as string | undefined
 
     return {
         props: {
@@ -112,7 +113,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 image: user.image ?? null,
                 bio: user.bio ?? null,
             },
-            isOwner: sessionUserId === id,
+            isOwner: sessionUserId === user._id.toString(),
         },
     }
 }
