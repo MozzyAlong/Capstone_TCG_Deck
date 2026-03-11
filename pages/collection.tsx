@@ -21,6 +21,8 @@ searchResults.forEach((result: any) => {
     console.log(result['id']);
 });
 
+const fallbackImage = "https://www.uvdesigns.ca/wp-content/themes/uvdesigns2025/img/no_image.jpg";
+
 
 export default function Collection() {
     return (
@@ -38,18 +40,23 @@ export default function Collection() {
                     <h3 className="mt-2 text-center">{/* name here */}Black Lotus</h3>
                 </div>
                 {/* searched cards example */}
-                {searchResults.map((card: any) => (
-                    <div
-                        key={card.id}
-                        className="flex flex-col items-center w-[15%] flex-shrink-0
-                        transition-transform duration-200
-                        hover:scale-105 hover:z-10"
-                    >
-                        <Card src={card.image + "/low.png"} />
-                        <br/>
-                        <h3 className="mt-2 text-center">{card.name}</h3>
-                    </div>
-                ))}
+                {searchResults.map((card: any) => {
+                    // Check if result image is defined, use default 'No image' image if there is no image
+                    const imageSrc = card.image ? `${card.image}/low.png` : "https://www.uvdesigns.ca/wp-content/themes/uvdesigns2025/img/no_image.jpg";
+
+                    return (
+                        <div
+                            key={card.id}
+                            className="flex flex-col items-center w-[15%] flex-shrink-0
+                            transition-transform duration-200
+                            hover:scale-105 hover:z-10"
+                        >
+                            <Card src={imageSrc} />
+                            <br/>
+                            <h3 className="mt-2 text-center">{card.name}</h3>
+                        </div>
+                    );
+                })}
 
                 {/* Second card */}
                 <div className="flex flex-col items-center w-[15%] flex-shrink-0
