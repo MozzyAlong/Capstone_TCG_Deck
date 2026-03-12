@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import Card from "@/components/Card";
+import MiniCard from "@/components/MiniCard";
 
 const fallbackImage = "https://www.uvdesigns.ca/wp-content/themes/uvdesigns2025/img/no_image.jpg";
 
@@ -34,6 +34,7 @@ export default function Search() {
                 <label>Select Game: </label>
                 <select
                     name="gameType"
+                    className="mt-1 w-full px-3 py-2 bg-white/5 text-white border border-white/10 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
                     value={gameType}
                     onChange={(e) => setGameType(e.target.value)}
                 >
@@ -45,6 +46,8 @@ export default function Search() {
                 <label>Card Name: </label>
                 <input
                     type="text"
+                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                    defaultValue={''}
                     value={cardName}
                     onChange={(e) => setCardName(e.target.value)}
                 />
@@ -52,17 +55,18 @@ export default function Search() {
                 <input type="submit" value="Search" />
             </form>
 
-            <div className="mt-6">
+            <div className="mt-6 grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4 w-full max-w-6xl mx-auto">
                 {searchResults.map((result: any) => (
-                    <div key={result.id}>
-                        <Card src={result.image ? result.image + "/low.png" : fallbackImage} />
-                        {result.name}
+                    <div key={result.id} className="flex flex-col items-center text-center">
+                        <MiniCard src={result.image ? result.image + "/low.png" : fallbackImage} />
+                        <h3>{result.name}</h3>
                         <form>
                             <label>Add to Deck: </label>
-                            <select name="deckName">
-                                <option>UPDATE THIS TO LIST USER DECKS</option>
+                            <select name="deckName" className="mt-1 w-full px-3 py-2 bg-white/5 text-white border border-white/10 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400">
+                                <option>UPDATE THIS</option>
                             </select>
-                            <input type="submit" value="Add to Deck"></input>
+                            <br/>
+                            <input type="submit" value="Submit to Deck" className="rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white inset-ring inset-ring-white/5 hover:bg-white/20"></input>
                         </form>
                         <br/>
                         <br/>
