@@ -2,6 +2,8 @@
 import { useState } from "react";
 import Card from "@/components/Card";
 
+const fallbackImage = "https://www.uvdesigns.ca/wp-content/themes/uvdesigns2025/img/no_image.jpg";
+
 export default function Search() {
 
     const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -53,7 +55,7 @@ export default function Search() {
             <div className="mt-6">
                 {searchResults.map((result: any) => (
                     <div key={result.id}>
-                        <Card src={result.image + "/low.png"} />
+                        <Card src={result.image ? result.image + "/low.png" : fallbackImage} />
                         {result.name}
                         <form>
                             <label>Add to Deck: </label>

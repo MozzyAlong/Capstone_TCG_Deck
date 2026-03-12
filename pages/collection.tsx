@@ -42,7 +42,7 @@ export default function Collection() {
                 {/* searched cards example */}
                 {searchResults.map((card: any) => {
                     // Check if result image is defined, use default 'No image' image if there is no image
-                    const imageSrc = card.image ? `${card.image}/low.png` : "https://www.uvdesigns.ca/wp-content/themes/uvdesigns2025/img/no_image.jpg";
+                    const imageSrc = card.image ? `${card.image}/low.png` : fallbackImage;
 
                     return (
                         <div
