@@ -1,23 +1,4 @@
-// This lib only kinda needed cause we are using typescript and need types for some stuff
-// also this doesnt run on server its on client
-export type DeckVisibility = "private" | "unlisted" | "public"
-
-export type DeckInfo = {
-    id: string
-    title: string
-    game: string
-    visibility: DeckVisibility
-    createdAt: string | null
-    updatedAt: string | null
-}
-
-type DeckListApiResponse =
-    | { decks: DeckInfo[] }
-    | { error: string }
-
-type DeckCreateApiResponse =
-    | { deckId: string }
-    | { error: string }
+import type { CreateDeckPayload, DeckCard, DeckCardAddApiResponse, DeckCardDeleteApiResponse, DeckCardsApiResponse, DeckCardsReplaceApiResponse, DeckCreateApiResponse, DeckDetailsApiResponse, DeckListApiResponse, DeckUpdateApiResponse, DeleteDeckApiResponse, SingleDeckCardApiResponse, UpdateDeckPayload, DeckCardUpdateApiResponse } from "@/lib/deckTypes"
 
 const DECK_API_BASE_PATH = "/api/deck"
 
@@ -26,13 +7,7 @@ export async function fetchUserDecks(): Promise<DeckListApiResponse> {
     return (await response.json()) as DeckListApiResponse
 }
 
-export async function createDeckApiRequest(payload: {
-    title: string
-    game: string
-    visibility: DeckVisibility
-    description?: string
-    format?: string
-}): Promise<DeckCreateApiResponse> {
+export async function createDeckApiRequest(payload: CreateDeckPayload): Promise<DeckCreateApiResponse> {
     const response = await fetch(DECK_API_BASE_PATH, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -42,10 +17,88 @@ export async function createDeckApiRequest(payload: {
     return (await response.json()) as DeckCreateApiResponse
 }
 
-export async function deleteDeck(deckId: string) {
-    const response = await fetch(`/api/deck/${deckId}`, {
-        method: "DELETE",
-    })
+export async function fetchDeck(deckId: string): Promise<DeckDetailsApiResponse> {
+    const response = await fetch(`${DECK_API_BASE_PATH}/${encodeURIComponent(deckId)}`)
 
-    return await response.json()
+    return (await response.json()) as DeckDetailsApiResponse
+}
+
+export async function updateDeck(deckId: string, payload: UpdateDeckPayload): Promise<DeckUpdateApiResponse> {
+    const response = await fetch(`${DECK_API_BASE_PATH}/${encodeURIComponent(deckId)}`,
+        {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        }
+    )
+
+    return (await response.json()) as DeckUpdateApiResponse
+}
+
+export async function deleteDeck(deckId: string): Promise<DeleteDeckApiResponse> {
+    const response = await fetch(`${DECK_API_BASE_PATH}/${encodeURIComponent(deckId)}`,
+        {
+            method: "DELETE",
+        }
+    )
+
+    return (await response.json()) as DeleteDeckApiResponse
+}
+
+export async function fetchDeckCards(deckId: string): Promise<DeckCardsApiResponse> {
+    const response = await fetch(`${DECK_API_BASE_PATH}/${encodeURIComponent(deckId)}/cards`)
+
+    return (await response.json()) as DeckCardsApiResponse
+}
+
+export async function replaceDeckCards(deckId: string, cards: DeckCard[]): Promise<DeckCardsReplaceApiResponse> {
+    const response = await fetch(`${DECK_API_BASE_PATH}/${encodeURIComponent(deckId)}/cards`,
+        {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cards }),
+        }
+    )
+
+    return (await response.json()) as DeckCardsReplaceApiResponse
+}
+
+export async function addDeckCard(deckId: string, card: DeckCard): Promise<DeckCardAddApiResponse> {
+    const response = await fetch(`${DECK_API_BASE_PATH}/${encodeURIComponent(deckId)}/cards`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ card }),
+        }
+    )
+
+    return (await response.json()) as DeckCardAddApiResponse
+}
+
+export async function fetchDeckCard(deckId: string, cardId: string): Promise<SingleDeckCardApiResponse> {
+    const response = await fetch(`${DECK_API_BASE_PATH}/${encodeURIComponent(deckId)}/cards/${encodeURIComponent(cardId)}`)
+
+    return (await response.json()) as SingleDeckCardApiResponse
+}
+
+export async function updateDeckCardQuantity(deckId: string, cardId: string, quantity: number): Promise<DeckCardUpdateApiResponse> {
+    const response = await fetch(`${DECK_API_BASE_PATH}/${encodeURIComponent(deckId)}/cards/${encodeURIComponent(cardId)}`,
+        {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ quantity }),
+        }
+    )
+
+    return (await response.json()) as DeckCardUpdateApiResponse
+}
+
+export async function removeDeckCard(deckId: string, cardId: string): Promise<DeckCardDeleteApiResponse> {
+    const response = await fetch(`${DECK_API_BASE_PATH}/${encodeURIComponent(deckId)}/cards/${encodeURIComponent(cardId)}`,
+        {
+            method: "DELETE",
+        }
+    )
+
+    return (await response.json()) as DeckCardDeleteApiResponse
 }
