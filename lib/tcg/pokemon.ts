@@ -19,10 +19,10 @@ function pokemonApiCardsToSearchCards(cards: any[]): SearchCard[] {
 }
 
 export const pokemonProvider: TcgProvider = {
-    async searchCards(query?: string): Promise<SearchCard[]> {
+    async searchCards(name?: string): Promise<SearchCard[]> {
         try {
-            const url = query?.trim()
-                ? `https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(query.trim())}`
+            const url = name?.trim()
+                ? `https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(name.trim())}`
                 : `https://api.tcgdex.net/v2/en/cards` // if no search string just get the all cards
 
             const response = await fetch(url)

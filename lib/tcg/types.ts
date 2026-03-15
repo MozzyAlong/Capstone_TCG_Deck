@@ -10,6 +10,15 @@ export type SearchCard = {
 
 // Each tcg provider must implement these
 export interface TcgProvider {
-    searchCards(query?: string): Promise<SearchCard[]>
+    /**
+     * @param name the name of the card to search for
+     * @returns The list of cards resulting from the search
+     */
+    searchCards(name?: string): Promise<SearchCard[]>
+
+    /**
+     * @param id card id of the card to search for
+     * @returns The requested card or null if not card is found
+     */
     getCardById(id: string): Promise<SearchCard | null>
 }
