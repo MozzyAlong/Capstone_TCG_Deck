@@ -40,8 +40,7 @@ function getDeckCardSubtitle(card: DeckCard) {
 }
 
 function getDeckCardNumber(card: DeckCard) {
-    const raw = card.raw as SearchCard | undefined
-    return raw?.cardNumber ?? card.id
+    return card.id
 }
 
 export default function DeckEditorPage() {
