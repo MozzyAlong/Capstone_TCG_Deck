@@ -11,7 +11,7 @@ export default function Navbar({ links }: { links: string[] }) {
     const loading = status === "loading"
 
     return (
-        <nav className="sticky top-0 z-50 bg-gray-800 border-b border-white/10">
+        <nav className="sticky top-0 z-50 bg-gray-800 border-b border-white/10" style={{ zIndex: 99999 }}>
             <div className="flex h-16 items-center justify-between px-4">
                 <div className="flex gap-4">
                     {links.map((link) => {
