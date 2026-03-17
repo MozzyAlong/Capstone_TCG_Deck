@@ -33,6 +33,8 @@ function getDeckCardImage(card: DeckCard) {
     return ""
 }
 
+const fallbackImage = "https://www.uvdesigns.ca/wp-content/themes/uvdesigns2025/img/no_image.jpg";
+
 // Getting info from card raw data
 function getDeckCardSubtitle(card: DeckCard) {
     const raw = card.raw as SearchCard | undefined
@@ -520,7 +522,7 @@ export default function DeckEditorPage() {
                                                 )}
 
                                                 <Card
-                                                    src={getSearchCardImage(card.image)}
+                                                    src={getSearchCardImage(card.image) ? getSearchCardImage(card.image) : fallbackImage}
                                                     alt={card.name}
                                                     width={250}
                                                     height={350}
