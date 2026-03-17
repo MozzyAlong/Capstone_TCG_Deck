@@ -6,22 +6,13 @@ import { ObjectId } from "mongodb"
 
 type CreateDeckBody = {
     title?: string
-
-    // TCG game starting with pokemon
     game?: string
-
     description?: string
-
-    // Game formats, standard for now will decide how we handle other modes in the future
     format?: string
-
-    // private: only the decks owner can view
-    // unlisted: can be viewed if someone has a link but wont be shown on other pages
-    // public: publicly available
     visibility?: "private" | "unlisted" | "public"
 }
 
-const ALLOWED_GAMES = new Set(["pokemon"])  // pokemon first, probably MTG second? havent decided
+const ALLOWED_GAMES = new Set(["pokemon"])
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const session = await getServerSession(req, res, authOptions)
@@ -34,30 +25,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const db = client.db()
     const ownerObjectId = new ObjectId(userId)
 
-    // list personal decks
     if (req.method === "GET") {
         const decks = await db
             .collection("decks")
             .find({ ownerId: ownerObjectId })
-            .project({ title: 1, game: 1, visibility: 1, createdAt: 1, updatedAt: 1 })
+            .project({ title: 1, game: 1, visibility: 1, createdAt: 1, updatedAt: 1, cards: 1 })
             .sort({ updatedAt: -1 })
             .toArray()
 
         return res.status(200).json({
-            decks: decks.map((deck) => ({
-                id: deck._id.toString(),
-                title: (deck as any).title ?? "",
-                game: (deck as any).game ?? "",
-                visibility: (deck as any).visibility ?? "private",
-                createdAt: (deck as any).createdAt ?? null,
-                updatedAt: (deck as any).updatedAt ?? null,
-            })),
+            decks: decks.map((deck) => {
+                const cards = Array.isArray((deck as any).cards) ? (deck as any).cards : []
+
+                const cardCount = cards.reduce((total: number, card: any) => {
+                    return total + Number(card?.quantity ?? 0)
+                }, 0)
+
+                return {
+                    id: deck._id.toString(),
+                    title: (deck as any).title ?? "",
+                    game: (deck as any).game ?? "",
+                    visibility: (deck as any).visibility ?? "private",
+                    createdAt: (deck as any).createdAt ?? null,
+                    updatedAt: (deck as any).updatedAt ?? null,
+                    cardCount,
+                }
+            }),
         })
     }
 
-    // decks creation
     if (req.method === "POST") {
-        // body is the request body
         const body = (req.body ?? {}) as CreateDeckBody
 
         const title = (body.title ?? "").trim()
@@ -66,12 +63,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const format = (body.format ?? "").trim()
         const visibility = (body.visibility ?? "private").trim() as CreateDeckBody["visibility"]
 
-        // fail early if any of this are true
         if (!title) return res.status(400).json({ error: "Deck title is required" })
         if (title.length > 60) return res.status(400).json({ error: "Deck title is too long" })
         if (!game) return res.status(400).json({ error: "Game is required" })
         if (game.length > 32) return res.status(400).json({ error: "Invalid game" })
-        if (!ALLOWED_GAMES.has(game)) return res.status(400).json({ error: "Unsupported game" }) // just in case
+        if (!ALLOWED_GAMES.has(game)) return res.status(400).json({ error: "Unsupported game" })
 
         const now = new Date()
 

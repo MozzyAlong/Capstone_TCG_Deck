@@ -1,5 +1,5 @@
 import Link from "next/link"
-import type { DeckInfo } from "@/lib/deckApi"
+import type { DeckInfo } from "@/lib/deckTypes";
 import { deleteDeck } from "@/lib/deckApi"
 
 const GAME_DISPLAY_NAMES: Record<string, string> = {
@@ -22,11 +22,6 @@ export default function DeckCard({ deck, onDeleted }: DeckCardProps) {
 
         const result = await deleteDeck(deck.id)
 
-        if (result?.error) {
-            alert(result.error)
-            return
-        }
-
         onDeleted(deck.id)
     }
 
@@ -44,7 +39,7 @@ export default function DeckCard({ deck, onDeleted }: DeckCardProps) {
                         </div>
                     </div>
                     <span className="rounded-full border border-white/10 bg-gray-900/40 px-3 py-1 text-xs">
-                        0 cards
+                        {deck.cardCount ?? 0} cards
                     </span>
                 </div>
                 <div className="mt-4 flex justify-end gap-2">

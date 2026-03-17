@@ -4,7 +4,8 @@ import { useSession } from "next-auth/react"
 import { PlusIcon } from "@heroicons/react/24/outline"
 import CreateDeckModal from "@/components/CreateDeckModal"
 import DeckSection from "@/components/DeckSection"
-import { fetchUserDecks, type DeckInfo } from "@/lib/deckApi"
+import { fetchUserDecks } from "@/lib/deckApi"
+import { DeckInfo} from "@/lib/deckTypes";
 
 export default function DeckCreatePage() {
     const router = useRouter()
@@ -27,6 +28,7 @@ export default function DeckCreatePage() {
             setDeckList([])
             setPageErrorMessage(apiResponse.error)
         }
+
         setPageIsLoading(false)
     }
 
@@ -37,9 +39,7 @@ export default function DeckCreatePage() {
         }
     }, [sessionIsLoading])
 
-
     // To sort the games into the dividers even though we only have one game now
-    // https://react.dev/reference/react/useMemo
     const decksGroupedByGame = useMemo(() => {
         const groupingMap = new Map<string, DeckInfo[]>()
 
@@ -65,7 +65,6 @@ export default function DeckCreatePage() {
 
             groupingMap.set(gameKey, decksForGame)
         }
-
 
         // map into array
         const groupingEntries = Array.from(groupingMap.entries())
@@ -95,7 +94,7 @@ export default function DeckCreatePage() {
     function toggleGameSectionExpanded(gameKey: string) {
         setExpandedGameSections((previousState) => ({
             ...previousState,
-            [gameKey]: !previousState[gameKey], //toggle
+            [gameKey]: !previousState[gameKey],
         }))
     }
 
@@ -106,7 +105,7 @@ export default function DeckCreatePage() {
     async function handleDeckCreated(newDeckId: string) {
         setCreateDeckModalIsOpen(false)
         await refreshDeckList()
-        router.push(`/decks/${newDeckId}`) //redirecting to deck editing when a deck is created
+        router.push(`/decks/${newDeckId}`)
     }
 
     return (

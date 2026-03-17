@@ -11,6 +11,7 @@ export type DeckInfo = {
     visibility: DeckVisibility
     createdAt: string | null
     updatedAt: string | null
+    cardCount: number
 }
 
 export type DeckCard = {

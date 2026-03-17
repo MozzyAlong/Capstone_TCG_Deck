@@ -1,5 +1,5 @@
 import {ChevronDownIcon, ChevronRightIcon} from "@heroicons/react/24/outline"
-import type { DeckInfo } from "@/lib/deckApi"
+import type { DeckInfo} from "@/lib/deckTypes";
 import DeckCard from "./DeckCard"
 
 const GAME_DISPLAY_NAMES: Record<string, string> = {
