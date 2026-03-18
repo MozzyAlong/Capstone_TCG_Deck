@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { createDeckApiRequest, type DeckVisibility } from "@/lib/deckApi"
+import { createDeckApiRequest } from "@/lib/deckApi"
+import {type DeckVisibility} from "@/lib/deckTypes";
 
 type CreateDeckModalProps = {
     onClose: () => void
