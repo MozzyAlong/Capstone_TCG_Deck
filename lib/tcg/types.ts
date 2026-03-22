@@ -1,3 +1,10 @@
+export type CardSearchFilters = {
+    query?: string
+    set?: string
+    cardType?: string
+    energyType?: string
+}
+
 // assuming all cards from tcgs have a set & name, may need to change this later
 export type SearchCard = {
     id: string
@@ -11,14 +18,14 @@ export type SearchCard = {
 // Each tcg provider must implement these
 export interface TcgProvider {
     /**
-     * @param name the name of the card to search for
+     * @param filters search filters for the card query
      * @returns The list of cards resulting from the search
      */
-    searchCards(name?: string): Promise<SearchCard[]>
+    searchCards(filters?: CardSearchFilters): Promise<SearchCard[]>
 
     /**
      * @param id card id of the card to search for
-     * @returns The requested card or null if not card is found
+     * @returns The requested card or null if no card is found
      */
     getCardById(id: string): Promise<SearchCard | null>
 }

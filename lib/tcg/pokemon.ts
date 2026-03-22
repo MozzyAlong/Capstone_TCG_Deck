@@ -1,4 +1,4 @@
-import type { SearchCard, TcgProvider } from "@/lib/tcg/types"
+import type { CardSearchFilters, SearchCard, TcgProvider } from "@/lib/tcg/types"
 
 function pokemonApiCardToSearchCard(card: any): SearchCard {
     return {
@@ -19,17 +19,37 @@ function pokemonApiCardsToSearchCards(cards: any[]): SearchCard[] {
 }
 
 export const pokemonProvider: TcgProvider = {
-    async searchCards(name?: string): Promise<SearchCard[]> {
+    async searchCards(filters?: CardSearchFilters): Promise<SearchCard[]> {
         try {
-            const trimmedName = name?.trim()
+            const query = filters?.query?.trim() ?? ""
+            const set = filters?.set?.trim() ?? ""
+            const cardType = filters?.cardType?.trim() ?? ""
+            const pokemonType = filters?.energyType?.trim() ?? ""
 
-            // so that you cant search nothing and get all cards this is to reduce api calls
-            if (!trimmedName) {
+            if (!query && !set && !cardType && !pokemonType) {
                 return []
             }
 
+            const params = new URLSearchParams()
+
+            if (query) {
+                params.set("name", query)
+            }
+
+            if (set) {
+                params.set("set.id", set)
+            }
+
+            if (cardType) {
+                params.set("category", cardType)
+            }
+
+            if (pokemonType) {
+                params.set("types", pokemonType)
+            }
+
             const response = await fetch(
-                `https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(trimmedName)}`
+                `https://api.tcgdex.net/v2/en/cards?${params.toString()}`
             )
 
             const data = await response.json()

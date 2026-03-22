@@ -3,6 +3,7 @@ import { useRouter } from "next/router"
 import { useSession } from "next-auth/react"
 import Card from "@/components/Card"
 import DeckSidebar from "@/components/DeckSidebar"
+import DeckCardSearch from "@/components/DeckCardSearch"
 import {
     addDeckCard,
     fetchDeck,
@@ -12,14 +13,15 @@ import {
 } from "@/lib/deckApi"
 import { DeckCard, DeckDetails } from "@/lib/deckTypes"
 import { getTcgProvider } from "@/lib/tcg"
+import { fetchPokemonFilterOptions } from "@/lib/tcg/filters/api"
+import { pokemonFilterDefinitions } from "@/lib/tcg/filters/pokemon"
+import type { FilterOption, FilterState, FilterValue } from "@/lib/tcg/filters/types"
 import type { SearchCard } from "@/lib/tcg/types"
 
-//Card image
 function getSearchCardImage(image?: string | null) {
     return image ? `${image}/low.png` : ""
 }
 
-// Get card image from the db
 function getDeckCardImage(card: DeckCard) {
     if (card.image) {
         return `${card.image}/low.png`
@@ -50,25 +52,46 @@ export default function DeckEditorPage() {
     const { deckId } = router.query
     const { status: authenticationStatus } = useSession()
     const sessionIsLoading = authenticationStatus === "loading"
+
     const [deck, setDeck] = useState<DeckDetails | null>(null)
     const [pageIsLoading, setPageIsLoading] = useState(true)
     const [pageErrorMessage, setPageErrorMessage] = useState<string | null>(null)
+
     const [deckTitleInput, setDeckTitleInput] = useState("")
     const [titleIsSaving, setTitleIsSaving] = useState(false)
+
     const [searchInput, setSearchInput] = useState("")
     const [submittedSearch, setSubmittedSearch] = useState("")
     const [searchResults, setSearchResults] = useState<SearchCard[]>([])
     const [searchIsLoading, setSearchIsLoading] = useState(false)
     const [searchErrorMessage, setSearchErrorMessage] = useState<string | null>(null)
+
+    const [searchFilters, setSearchFilters] = useState<FilterState>({
+        set: "",
+        cardType: "",
+        energyType: "",
+    })
+
+    const [pokemonSetOptions, setPokemonSetOptions] = useState<FilterOption[]>([])
+    const [filtersLoading, setFiltersLoading] = useState(false)
+    const [filtersError, setFiltersError] = useState<string | null>(null)
+
     const [currentPage, setCurrentPage] = useState(1)
     const [setNames, setSetNames] = useState<Record<string, string>>({})
     const [resolvingSetIds, setSetIds] = useState<Record<string, boolean>>({})
 
-    // Get tcg game
     const provider = useMemo(() => {
         if (!deck?.game) return null
         return getTcgProvider(deck.game)
     }, [deck?.game])
+
+    const activeFilters = useMemo(() => {
+        if (deck?.game === "pokemon") {
+            return pokemonFilterDefinitions(pokemonSetOptions)
+        }
+
+        return []
+    }, [deck?.game, pokemonSetOptions])
 
     async function loadDeck() {
         if (!deckId || typeof deckId !== "string") return
@@ -89,12 +112,43 @@ export default function DeckEditorPage() {
         setPageIsLoading(false)
     }
 
-    // When the deckid changes load the deck from db
     useEffect(() => {
         if (!sessionIsLoading && deckId) {
             void loadDeck()
         }
     }, [sessionIsLoading, deckId])
+
+    useEffect(() => {
+        let isActive = true
+
+        async function loadPokemonFilters() {
+            if (deck?.game !== "pokemon") return
+
+            try {
+                setFiltersLoading(true)
+                setFiltersError(null)
+
+                const sets = await fetchPokemonFilterOptions()
+
+                if (!isActive) return
+                setPokemonSetOptions(sets)
+            } catch (error) {
+                console.error(error)
+                if (!isActive) return
+                setFiltersError("Failed to load Pokémon sets.")
+            } finally {
+                if (isActive) {
+                    setFiltersLoading(false)
+                }
+            }
+        }
+
+        void loadPokemonFilters()
+
+        return () => {
+            isActive = false
+        }
+    }, [deck?.game])
 
     async function handleSaveDeckTitle() {
         if (!deck || !deckId || typeof deckId !== "string") return
@@ -124,6 +178,13 @@ export default function DeckEditorPage() {
         setTitleIsSaving(false)
     }
 
+    function handleFilterChange(filterId: string, value: FilterValue) {
+        setSearchFilters((previous) => ({
+            ...previous,
+            [filterId]: value,
+        }))
+    }
+
     async function handleSearch(event: React.FormEvent) {
         event.preventDefault()
 
@@ -140,9 +201,14 @@ export default function DeckEditorPage() {
         setSearchIsLoading(true)
         setSearchErrorMessage(null)
 
-        const cards = await provider.searchCards(search)
+        const cards = await provider.searchCards({
+            query: search,
+            set: typeof searchFilters.set === "string" ? searchFilters.set : "",
+            cardType: typeof searchFilters.cardType === "string" ? searchFilters.cardType : "",
+            energyType: typeof searchFilters.energyType === "string" ? searchFilters.energyType : "",
+        })
 
-        if (cards.length === 0 && search) {
+        if (cards.length === 0 && (search || searchFilters.set || searchFilters.cardType || searchFilters.energyType)) {
             setSearchResults([])
             setSearchErrorMessage(null)
             setSearchIsLoading(false)
@@ -159,10 +225,12 @@ export default function DeckEditorPage() {
         if (setNames[card.id]) return
         if (resolvingSetIds[card.id]) return
 
-        if (card.setName) {
+        const setName = card.setName
+
+        if (setName) {
             setSetNames((previous) => ({
                 ...previous,
-                [card.id]: card.setName!,
+                [card.id]: setName,
             }))
             return
         }
@@ -245,11 +313,12 @@ export default function DeckEditorPage() {
             }
         })
 
-        // update set names
-        if (cardToStore.setName) {
+        const setName = cardToStore.setName
+
+        if (setName) {
             setSetNames((previous) => ({
                 ...previous,
-                [card.id]: cardToStore.setName!,
+                [card.id]: setName,
             }))
         }
     }
@@ -429,30 +498,17 @@ export default function DeckEditorPage() {
                 <div className="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">
                     <section className="min-w-0 overflow-visible">
                         <div className="overflow-visible rounded-2xl border border-white/10 bg-gray-900/50 p-5 shadow-xl">
-                            <div className="mb-5 w-full">
-                                <form
-                                    onSubmit={handleSearch}
-                                    className="flex w-full items-center gap-4"
-                                >
-                                    <div className="min-w-0 flex-1">
-                                        <input
-                                            type="text"
-                                            value={searchInput}
-                                            onChange={(event) => setSearchInput(event.target.value)}
-                                            placeholder="Search cards"
-                                            className="w-full rounded-lg border border-white/10 bg-black/20 px-5 py-3 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-blue-400/60"
-                                        />
-                                    </div>
-
-                                    <button
-                                        type="submit"
-                                        disabled={searchIsLoading}
-                                        className="shrink-0 cursor-pointer inline-flex items-center justify-center rounded-lg border border-white/10 bg-blue-500/25 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-500/35 disabled:cursor-not-allowed disabled:opacity-60"
-                                    >
-                                        {searchIsLoading ? "Searching" : "Search"}
-                                    </button>
-                                </form>
-                            </div>
+                            <DeckCardSearch
+                                searchValue={searchInput}
+                                onSearchValueChange={setSearchInput}
+                                onSubmit={handleSearch}
+                                isLoading={searchIsLoading}
+                                filters={activeFilters}
+                                filterValues={searchFilters}
+                                onFilterChange={handleFilterChange}
+                                filtersLoading={filtersLoading}
+                                filtersError={filtersError}
+                            />
 
                             {(submittedSearch || searchResults.length > 0) && (
                                 <div className="mb-3 flex flex-col p-1 md:flex-row md:items-center md:justify-between">
