@@ -89,35 +89,12 @@ export default function DeckEditorPage() {
         setPageIsLoading(false)
     }
 
-    // When no card s are searched should show all cards
-    async function loadDefaultCards() {
-        if (!provider) {
-            setSearchResults([])
-            setSearchErrorMessage("This game is not supported yet.")
-            return
-        }
-
-        setSearchIsLoading(true)
-        setSearchErrorMessage(null)
-
-        const cards = await provider.searchCards()
-        setSearchResults(cards)
-        setSearchIsLoading(false)
-    }
-
     // When the deckid changes load the deck from db
     useEffect(() => {
         if (!sessionIsLoading && deckId) {
             void loadDeck()
         }
     }, [sessionIsLoading, deckId])
-
-    // Lod addable card when deckid or game changes
-    useEffect(() => {
-        if (!sessionIsLoading && deckId && provider) {
-            void loadDefaultCards()
-        }
-    }, [sessionIsLoading, deckId, provider])
 
     async function handleSaveDeckTitle() {
         if (!deck || !deckId || typeof deckId !== "string") return
