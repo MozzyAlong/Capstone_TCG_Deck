@@ -1,4 +1,20 @@
-import type { CreateDeckPayload, DeckCard, DeckCardAddApiResponse, DeckCardDeleteApiResponse, DeckCardsApiResponse, DeckCardsReplaceApiResponse, DeckCreateApiResponse, DeckDetailsApiResponse, DeckListApiResponse, DeckUpdateApiResponse, DeleteDeckApiResponse, SingleDeckCardApiResponse, UpdateDeckPayload, DeckCardUpdateApiResponse } from "@/lib/deckTypes"
+import type {
+    CreateDeckPayload,
+    DeckCard,
+    DeckCardAddApiResponse,
+    DeckCardDeleteApiResponse,
+    DeckCardsApiResponse,
+    DeckCardsReplaceApiResponse,
+    DeckCreateApiResponse,
+    DeckDetailsApiResponse,
+    DeckListApiResponse,
+    DeckUpdateApiResponse,
+    DeleteDeckApiResponse,
+    SingleDeckCardApiResponse,
+    UpdateDeckPayload,
+    DeckCardUpdateApiResponse,
+    PublicDeckSearchApiResponse
+} from "@/lib/deckTypes"
 
 const DECK_API_BASE_PATH = "/api/deck"
 
@@ -101,4 +117,37 @@ export async function removeDeckCard(deckId: string, cardId: string): Promise<De
     )
 
     return (await response.json()) as DeckCardDeleteApiResponse
+}
+
+export async function fetchPublicDecks(params?: {
+    query?: string
+    game?: string
+    page?: number
+}): Promise<PublicDeckSearchApiResponse> {
+    const searchParams = new URLSearchParams()
+
+    if (params?.query?.trim()) {
+        searchParams.set("query", params.query.trim())
+    }
+
+    if (params?.game?.trim()) {
+        searchParams.set("game", params.game.trim())
+    }
+
+    if (params?.page) {
+        searchParams.set("page", String(params.page))
+    }
+
+    const queryString = searchParams.toString()
+    const response = await fetch(`/api/deck/public${queryString ? `?${queryString}` : ""}`)
+
+    return (await response.json()) as PublicDeckSearchApiResponse
+}
+
+export async function fetchPublicDeck(deckId: string): Promise<DeckDetailsApiResponse> {
+    const response = await fetch(
+        `${DECK_API_BASE_PATH}/${encodeURIComponent(deckId)}/public`
+    )
+
+    return (await response.json()) as DeckDetailsApiResponse
 }

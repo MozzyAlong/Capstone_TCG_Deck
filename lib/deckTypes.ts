@@ -98,3 +98,15 @@ export type CreateDeckPayload = {
     format?: string
 }
 
+export type PublicDeckListItem = DeckInfo & {
+    authorName: string | null
+    authorImage: string | null
+}
+
+export type PublicDeckSearchApiResponse =
+    {
+        decks: PublicDeckListItem[]
+        total: number
+        page: number
+        totalPages: number
+    } | ApiErrorResponse
