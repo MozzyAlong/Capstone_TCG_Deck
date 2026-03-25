@@ -1,4 +1,4 @@
-eexport default function About() {
+export default function About() {
     return (
         <main className="flex flex-col items-center justify-center min-h-screen px-6 text-center">
             
