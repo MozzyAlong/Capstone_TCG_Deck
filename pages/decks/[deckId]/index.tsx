@@ -206,6 +206,8 @@ export default function DeckEditorPage() {
             raw: cardToStore,
         }
 
+
+
         const result = await addDeckCard(deckId, deckCard)
 
         if ("error" in result) {
@@ -256,6 +258,14 @@ export default function DeckEditorPage() {
 
     async function handleIncreaseQuantity(card: DeckCard) {
         if (!deckId || typeof deckId !== "string") return
+        
+        // This point to calculate whether a card CAN be added
+        // Or use a point in the page itself to disable adding more of a card
+        // Determine name, type, and quantity of a card in THIS DECK
+        // Rule of four: Only restrict non basic energy
+        // Name rules: Symbols can change a name, except for delta. Other phrases do not change the name.
+        // If the species form name is referenced, that is a unique name.
+        // If the deck has reached the maximum capacity for that card, disable the add button for this card.
 
         const nextQuantity = card.quantity + 1
         const result = await updateDeckCardQuantity(deckId, card.id, nextQuantity)
