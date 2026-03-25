@@ -15,7 +15,12 @@ export default function Navbar({ links }: { links: string[] }) {
             <div className="flex h-16 items-center justify-between px-4">
                 <div className="flex gap-4">
                     {links.map((link) => {
-                        const href = link === "Deck AI" ? "/" : `/${link.toLowerCase()}`
+                        const href =
+                            link === "Deck AI"
+                                ? "/"
+                                : link === "Discover"
+                                    ? "/decks/discover"
+                                    : `/${link.toLowerCase()}`
                         const isActive = pathname === href
 
                         return (
