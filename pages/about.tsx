@@ -29,7 +29,7 @@ export default function About() {
                 on the user’s current deck. This allows users to experiment with new ideas and refine their 
                 builds with intelligent assistance.
 
-                AI INT
+                AI INTEGRATION
             </p>
 
         </main>
