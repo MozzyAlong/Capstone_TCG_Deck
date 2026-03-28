@@ -21,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
         const deck = await db.collection("decks").findOne({
             _id: new ObjectId(deckId),
-            visibility: "public",
+            visibility: { $in: ["public", "unlisted"]},
         })
 
         if (!deck) {
