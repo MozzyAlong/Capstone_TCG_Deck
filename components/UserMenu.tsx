@@ -74,15 +74,6 @@ export default function UserMenu() {
                         Profile
                     </Link>
 
-                    <Link
-                        href="/settings"
-                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5"
-                        role="menuitem"
-                        onClick={() => setOpen(false)}
-                    >
-                        Settings
-                    </Link>
-
                     <button
                         type="button"
                         className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5 cursor-pointer"
