@@ -5,6 +5,7 @@ import { fetchPublicDeck } from "@/lib/deckApi"
 import type { DeckCard, DeckDetails } from "@/lib/deckTypes"
 import type { SearchCard } from "@/lib/tcg/types"
 import BackButton from "@/components/BackButton"
+import ShareDeckButton from "@/components/ShareDeckButton";
 
 function getDeckCardImage(card: DeckCard) {
     if (card.image) {
@@ -117,8 +118,13 @@ export default function PublicDeckPage() {
     return (
         <div className="min-h-screen text-white">
             <div className="mx-auto max-w-7xl px-6 pb-10 pt-10">
-                <div className="mb-4">
+                <div className="mb-4 flex items-center justify-between">
                     <BackButton fallbackHref="/decks/discover" />
+                    <ShareDeckButton
+                        deckId={deck.id}
+                        visibility={deck.visibility}
+                        className="inline-flex h-10 items-center justify-center px-4 hover:cursor-pointer"
+                    />
                 </div>
                 <div className="mb-8 rounded-2xl border border-white/10 bg-gray-900/60 p-6">
                     <div className="text-xs uppercase tracking-[0.22em] text-gray-400">
