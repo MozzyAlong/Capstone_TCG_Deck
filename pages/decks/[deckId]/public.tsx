@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/router"
-import { ArrowLeftIcon } from "@heroicons/react/24/solid"
 import Card from "@/components/Card"
 import { fetchPublicDeck } from "@/lib/deckApi"
 import type { DeckCard, DeckDetails } from "@/lib/deckTypes"
 import type { SearchCard } from "@/lib/tcg/types"
+import BackButton from "@/components/BackButton"
 
 function getDeckCardImage(card: DeckCard) {
     if (card.image) {
@@ -24,8 +24,7 @@ function getDeckCardSetName(card: DeckCard) {
     return raw?.setName ?? "Unknown set"
 }
 
-const fallbackImage =
-    "https://www.uvdesigns.ca/wp-content/themes/uvdesigns2025/img/no_image.jpg"
+const fallbackImage = "https://www.uvdesigns.ca/wp-content/themes/uvdesigns2025/img/no_image.jpg"
 
 export default function PublicDeckPage() {
     const router = useRouter()
@@ -34,15 +33,6 @@ export default function PublicDeckPage() {
     const [deck, setDeck] = useState<DeckDetails | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-
-    //back arrow button
-    function handleBack() {
-        if (window.history.length > 1) {
-            router.back()
-        } else {
-            router.push("/decks/discover")
-        }
-    }
 
     // deck info
     useEffect(() => {
@@ -122,15 +112,8 @@ export default function PublicDeckPage() {
     return (
         <div className="min-h-screen text-white">
             <div className="mx-auto max-w-7xl px-6 pb-10 pt-10">
-                {/* back button*/}
                 <div className="mb-4">
-                    <button
-                        onClick={handleBack}
-                        className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
-                        aria-label="Go back"
-                    >
-                        <ArrowLeftIcon className="h-4 w-4" />
-                    </button>
+                    <BackButton fallbackHref="/decks/discover" />
                 </div>
                 <div className="mb-8 rounded-2xl border border-white/10 bg-gray-900/60 p-6">
                     <div className="text-xs uppercase tracking-[0.22em] text-gray-400">

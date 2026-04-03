@@ -17,8 +17,8 @@ import { fetchPokemonFilterOptions } from "@/lib/tcg/filters/api"
 import { pokemonFilterDefinitions } from "@/lib/tcg/filters/pokemon"
 import type { FilterOption, FilterState, FilterValue } from "@/lib/tcg/filters/types"
 import type { SearchCard } from "@/lib/tcg/types"
-import Link from "next/link"
 import ShareDeckButton from "@/components/ShareDeckButton"
+import BackButton from "@/components/BackButton";
 
 function getSearchCardImage(image?: string | null) {
     return image ? `${image}/low.png` : ""
@@ -455,13 +455,7 @@ export default function DeckEditorPage() {
         <div className="min-h-screen text-white">
             <div className="mx-auto max-w-7xl px-6 pt-10 pb-10">
                 <div className="mb-4 flex items-center justify-between">
-                    <Link
-                        href="/decks"
-                        className="inline-flex h-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white transition hover:bg-white/10"
-                    >
-                        ← Back
-                    </Link>
-
+                    <BackButton fallbackHref="/decks/discover" />
                     <ShareDeckButton
                         deckId={deck.id}
                         visibility={deck.visibility}
