@@ -24,6 +24,11 @@ function getDeckCardSetName(card: DeckCard) {
     return raw?.setName ?? "Unknown set"
 }
 
+// for visibility label maybe put this lib later
+function capitalizeFirstLetter(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
 const fallbackImage = "https://www.uvdesigns.ca/wp-content/themes/uvdesigns2025/img/no_image.jpg"
 
 export default function PublicDeckPage() {
@@ -125,7 +130,7 @@ export default function PublicDeckPage() {
                     </h1>
 
                     <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-300">
-                        <span>Visibility: {deck.visibility}</span>
+                        <span>{"Visibility: " + capitalizeFirstLetter(deck.visibility)}</span>
                         <span>Total cards: {totalCards}</span>
                         <span>
                             Updated:{" "} {/* spacing */}
