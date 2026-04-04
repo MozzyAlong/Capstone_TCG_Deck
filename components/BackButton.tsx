@@ -33,7 +33,7 @@ export default function BackButton({
             type="button"
             onClick={handleBack}
             aria-label={ariaLabel}
-            className={`flex h-9 w-9 hover:cursor-pointer items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white transition hover:bg-white/10 ${className}`}
+            className={`flex h-9 w-9 hover:cursor-pointer items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white hover:bg-white/10 ${className}`}
         >
             <ArrowLeftIcon className="h-4 w-4" />
         </button>
