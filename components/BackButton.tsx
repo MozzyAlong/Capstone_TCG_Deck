@@ -2,7 +2,7 @@ import { useRouter } from "next/router"
 import { ArrowLeftIcon } from "@heroicons/react/24/solid"
 
 type BackButtonProps = {
-    fallbackHref?: string //needed incase the user came from a link or something so no history
+    fallbackHref?: string
     className?: string
     ariaLabel?: string
 }
@@ -15,7 +15,13 @@ export default function BackButton({
     const router = useRouter()
 
     function handleBack() {
-        if (window.history.length > 1) {
+        const canGoBack = window.history.length > 1
+        const previousPage = document.referrer
+
+        // check if previous page is from this site
+        const fromThisSite = previousPage && previousPage.startsWith(window.location.origin)
+
+        if (canGoBack && fromThisSite) {
             router.back()
         } else {
             router.push(fallbackHref)
