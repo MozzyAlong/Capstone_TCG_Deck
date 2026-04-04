@@ -2,6 +2,8 @@ import type { NextApiRequest, NextApiResponse } from "next"
 import { ObjectId } from "mongodb"
 import clientPromise from "@/lib/db"
 import type { DeckDetailsApiResponse } from "@/lib/deckTypes"
+import {authOptions} from "@/pages/api/auth/[...nextauth]";
+import { getServerSession } from "next-auth/next"
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<DeckDetailsApiResponse>) {
     if (req.method !== "GET") {
@@ -16,15 +18,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
 
     try {
+        const session = await getServerSession(req, res, authOptions)
+        const userId = (session?.user as any)?.id as string | undefined
+
         const client = await clientPromise
         const db = client.db()
 
         const deck = await db.collection("decks").findOne({
             _id: new ObjectId(deckId),
-            visibility: "public",
         })
 
         if (!deck) {
+            return res.status(404).json({ error: "Deck not found" })
+        }
+
+        // Check if owner
+        // owner can view "public" page of deck even if private
+        const isOwner =
+            !!userId &&
+            String(deck.ownerId) === String(userId)
+
+        const isPubliclyVisible = deck.visibility === "public" || deck.visibility === "unlisted"
+
+        if (!isPubliclyVisible && !isOwner) {
             return res.status(404).json({ error: "Deck not found" })
         }
 
