@@ -26,6 +26,8 @@ export type DeckDetails = DeckInfo & {
     description: string | null
     format: string | null
     cards: DeckCard[]
+    authorId: string | null
+    authorName: string | null
 }
 
 export type DeckListApiResponse = { decks: DeckInfo[] } | ApiErrorResponse
@@ -99,6 +101,7 @@ export type CreateDeckPayload = {
 }
 
 export type PublicDeckListItem = DeckInfo & {
+    authorId: string | null
     authorName: string | null
     authorImage: string | null
 }

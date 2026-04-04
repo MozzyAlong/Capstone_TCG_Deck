@@ -5,6 +5,21 @@ import type { DeckDetailsApiResponse } from "@/lib/deckTypes"
 import {authOptions} from "@/pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth/next"
 
+type UserInfo = {
+    _id: ObjectId
+    name?: string | null
+    email?: string | null
+}
+
+function toObjectId(value: unknown): ObjectId | null {
+    if (!value) return null
+    if (value instanceof ObjectId) return value
+    if (typeof value === "string" && ObjectId.isValid(value)) {
+        return new ObjectId(value)
+    }
+    return null
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse<DeckDetailsApiResponse>) {
     if (req.method !== "GET") {
         res.setHeader("Allow", "GET")
@@ -44,6 +59,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             return res.status(404).json({ error: "Deck not found" })
         }
 
+        const ownerId = toObjectId(deck.ownerId)
+
+        const author = ownerId
+            ? await db.collection<UserInfo>("users").findOne(
+                { _id: ownerId },
+                { projection: { name: 1, email: 1 } }
+            )
+            : null
+
         return res.status(200).json({
             deck: {
                 id: String(deck._id),
@@ -57,7 +81,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                 cards: Array.isArray(deck.cards) ? deck.cards : [],
                 cardCount: Array.isArray(deck.cards)
                     ? deck.cards.reduce((total, card) => total + (card.quantity ?? 1), 0)
-                    : 0
+                    : 0,
+                authorId: ownerId ? ownerId.toHexString() : null,
+                authorName: author?.name ?? author?.email ?? null,
             },
         })
     } catch (error) {

@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/router"
 import Card from "@/components/Card"
@@ -5,7 +6,7 @@ import { fetchPublicDeck } from "@/lib/deckApi"
 import type { DeckCard, DeckDetails } from "@/lib/deckTypes"
 import type { SearchCard } from "@/lib/tcg/types"
 import BackButton from "@/components/BackButton"
-import ShareDeckButton from "@/components/ShareDeckButton";
+import ShareDeckButton from "@/components/ShareDeckButton"
 
 function getDeckCardImage(card: DeckCard) {
     if (card.image) {
@@ -134,6 +135,18 @@ export default function PublicDeckPage() {
                     <h1 className="mt-3 text-3xl font-semibold text-white">
                         {deck.title}
                     </h1>
+
+                    {deck.authorId ? (
+                        <div className="mt-2 text-sm text-gray-400">
+                            by{" "}
+                            <Link
+                                href={`/profile/${deck.authorId}`}
+                                className="font-medium text-white transition hover:text-blue-300"
+                            >
+                                {deck.authorName ?? "Unknown user"}
+                            </Link>
+                        </div>
+                    ) : null}
 
                     <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-300">
                         <span>{"Visibility: " + capitalizeFirstLetter(deck.visibility)}</span>

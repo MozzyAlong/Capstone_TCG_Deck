@@ -22,7 +22,6 @@ type DeckInfo = {
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     cards?: Array<{ quantity?: number }>
-    userId?: string | ObjectId | null
     ownerId?: string | ObjectId | null
 }
 
@@ -85,7 +84,6 @@ export default async function handler(
                 createdAt: 1,
                 updatedAt: 1,
                 cards: 1,
-                userId: 1,
                 ownerId: 1,
             })
             .toArray()
@@ -93,7 +91,7 @@ export default async function handler(
         const userIds = Array.from(
             new Set(
                 decks
-                    .map((deck) => toObjectId(deck.userId ?? deck.ownerId))
+                    .map((deck) => toObjectId(deck.ownerId))
                     .filter((id): id is ObjectId => id !== null)
                     .map((id) => id.toHexString())
             )
@@ -119,7 +117,7 @@ export default async function handler(
         )
 
         const mapped: PublicDeckListItem[] = decks.map((deck) => {
-            const ownerId = toObjectId(deck.userId ?? deck.ownerId)
+            const ownerId = toObjectId(deck.ownerId)
             const author = ownerId ? usersById.get(ownerId.toHexString()) : null
 
             return {
@@ -132,6 +130,7 @@ export default async function handler(
                 cardCount: Array.isArray(deck.cards)
                     ? deck.cards.reduce((total, card) => total + (card.quantity ?? 1), 0)
                     : 0,
+                authorId: ownerId ? ownerId.toHexString() : null,
                 authorName: author?.name ?? author?.email ?? null,
                 authorImage: author?.image ?? null,
             }
