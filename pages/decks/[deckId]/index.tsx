@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/router"
 import { useSession } from "next-auth/react"
+import Link from "next/link"
 import Card from "@/components/Card"
 import DeckSidebar from "@/components/DeckSidebar"
 import DeckCardSearch from "@/components/DeckCardSearch"
@@ -11,7 +12,7 @@ import {
     updateDeck,
     updateDeckCardQuantity,
 } from "@/lib/deckApi"
-import { DeckCard, DeckDetails } from "@/lib/deckTypes"
+import { DeckCard, DeckDetails, DeckVisibility } from "@/lib/deckTypes"
 import { getTcgProvider } from "@/lib/tcg"
 import { fetchPokemonFilterOptions } from "@/lib/tcg/filters/api"
 import { pokemonFilterDefinitions } from "@/lib/tcg/filters/pokemon"
@@ -62,6 +63,9 @@ export default function DeckEditorPage() {
     const [deckTitleInput, setDeckTitleInput] = useState("")
     const [titleIsSaving, setTitleIsSaving] = useState(false)
 
+    const [visibilityInput, setVisibilityInput] = useState<DeckVisibility>("private") //default private
+    const [visibilityIsSaving, setVisibilityIsSaving] = useState(false)
+
     const [searchInput, setSearchInput] = useState("")
     const [submittedSearch, setSubmittedSearch] = useState("")
     const [searchResults, setSearchResults] = useState<SearchCard[]>([])
@@ -109,6 +113,7 @@ export default function DeckEditorPage() {
         } else {
             setDeck(result.deck)
             setDeckTitleInput(result.deck.title)
+            setVisibilityInput(result.deck.visibility)
         }
 
         setPageIsLoading(false)
@@ -178,6 +183,36 @@ export default function DeckEditorPage() {
         setDeck(result.deck)
         setDeckTitleInput(result.deck.title)
         setTitleIsSaving(false)
+    }
+
+    async function handleVisibilityChange(nextVisibility: DeckVisibility) {
+        if (!deck || !deckId || typeof deckId !== "string") return
+        if (visibilityIsSaving) return
+
+        //just incase
+        if (nextVisibility === deck.visibility) {
+            setVisibilityInput(nextVisibility)
+            return
+        }
+
+        setVisibilityInput(nextVisibility)
+        setVisibilityIsSaving(true)
+        setPageErrorMessage(null)
+
+        //updating only visibilty
+        const result = await updateDeck(deckId, { visibility: nextVisibility })
+
+        if ("error" in result) {
+            setPageErrorMessage(result.error)
+            setVisibilityInput(deck.visibility)
+            setVisibilityIsSaving(false)
+            return
+        }
+
+        //syncing deck
+        setDeck(result.deck)
+        setVisibilityInput(result.deck.visibility)
+        setVisibilityIsSaving(false)
     }
 
     function handleFilterChange(filterId: string, value: FilterValue) {
@@ -454,14 +489,72 @@ export default function DeckEditorPage() {
     return (
         <div className="min-h-screen text-white">
             <div className="mx-auto max-w-7xl px-6 pt-10 pb-10">
-                <div className="mb-4 flex items-center justify-between">
+
+                {/*top row above page content*/}
+                <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                     <BackButton fallbackHref="/decks/discover" />
-                    <ShareDeckButton
-                        deckId={deck.id}
-                        visibility={deck.visibility}
-                        className="inline-flex h-10 items-center justify-center px-4 hover:cursor-pointer"
-                    />
+                    {/*right section of top row */}
+                    <div className="flex flex-wrap items-center gap-3">
+                        {/* Visibility change toggle thing */}
+                        <div className="inline-flex rounded-xl border border-white/10 bg-black/20 p-1">
+                            <button
+                                type="button"
+                                onClick={() => void handleVisibilityChange("private")}
+                                disabled={visibilityIsSaving}
+                                className={`rounded-l-lg px-3 py-2 text-sm font-medium cursor-pointer ${
+                                    visibilityInput === "private"
+                                        ? "text-white bg-white/10"
+                                        : "text-white hover:bg-white/10"
+                                }`}
+                            >
+                                Private
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => void handleVisibilityChange("unlisted")}
+                                disabled={visibilityIsSaving}
+                                className={`px-3 py-2 text-sm font-medium cursor-pointer ${
+                                    visibilityInput === "unlisted"
+                                        ? "text-white bg-white/10"
+                                        : "text-white hover:bg-white/10"
+                                }`}
+                            >
+                                Unlisted
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => void handleVisibilityChange("public")}
+                                disabled={visibilityIsSaving}
+                                className={`rounded-r-lg px-3 py-2 text-sm font-medium cursor-pointer ${
+                                    visibilityInput === "public"
+                                        ? "text-white bg-white/10"
+                                        : "text-white hover:bg-white/10"
+                                }`}
+                            >
+                                Public
+                            </button>
+                        </div>
+                        {visibilityIsSaving ? (
+                            <span className="text-xs text-gray-400">Saving...</span>
+                        ) : null}
+
+                        <Link
+                            href={`/decks/${deck.id}/public`}
+                            className="inline-flex h-10 items-center justify-center px-4 hover:cursor-pointer rounded-lg border border-white/10 bg-white/5 py-2 text-sm font-medium text-white hover:bg-white/10"
+                        >
+                            View
+                        </Link>
+
+                        <ShareDeckButton
+                            deckId={deck.id}
+                            visibility={deck.visibility}
+                            className="inline-flex h-10 items-center justify-center px-4 hover:cursor-pointer"
+                        />
+                    </div>
                 </div>
+
                 <div className="mb-8 rounded-2xl border border-white/10 bg-gray-900/60 p-6 shadow-2xl">
                     <div className="flex flex-col gap-6">
                         <div className="min-w-0">

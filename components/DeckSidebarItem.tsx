@@ -44,7 +44,7 @@ export default function DeckSidebarItem({
                     <div className="flex items-center gap-2">
                         <button
                             onClick={onDecrease}
-                            className="cursor-pointer rounded-lg border border-white/10 bg-white/5 p-1 text-white transition hover:bg-white/10 disabled:cursor-not-allowed"
+                            className="cursor-pointer rounded-lg border border-white/10 bg-white/5 p-1 text-white hover:bg-white/10 disabled:cursor-not-allowed"
                             aria-label={`Decrease ${card.name}`}
                         >
                             <MinusIcon className="h-4 w-4" />
@@ -54,7 +54,7 @@ export default function DeckSidebarItem({
                         </div>
                         <button
                             onClick={onIncrease}
-                            className="cursor-pointer rounded-lg border border-white/10 bg-white/5 p-1 text-white transition hover:bg-white/10 disabled:cursor-not-allowed"
+                            className="cursor-pointer rounded-lg border border-white/10 bg-white/5 p-1 text-white hover:bg-white/10 disabled:cursor-not-allowed"
                             aria-label={`increase ${card.name}`}
                         >
                             <PlusIcon className="h-4 w-4" />

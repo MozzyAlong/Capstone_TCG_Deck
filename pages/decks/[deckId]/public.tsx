@@ -1,8 +1,9 @@
 import Link from "next/link"
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/router"
+import { useSession } from "next-auth/react"
 import Card from "@/components/Card"
-import { fetchPublicDeck } from "@/lib/deckApi"
+import { copyDeckToMyDecks, fetchPublicDeck } from "@/lib/deckApi"
 import type { DeckCard, DeckDetails } from "@/lib/deckTypes"
 import type { SearchCard } from "@/lib/tcg/types"
 import BackButton from "@/components/BackButton"
@@ -36,12 +37,17 @@ const fallbackImage = "https://www.uvdesigns.ca/wp-content/themes/uvdesigns2025/
 export default function PublicDeckPage() {
     const router = useRouter()
     const { deckId } = router.query
+    const { data: session, status } = useSession()
 
     const [deck, setDeck] = useState<DeckDetails | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [copying, setCopying] = useState(false)
+    const [copyError, setCopyError] = useState<string | null>(null)
 
-    // deck info
+    const currentUserId = (session?.user as { id?: string } | undefined)?.id
+    const isOwner = !!deck?.authorId && !!currentUserId && deck.authorId === currentUserId
+
     useEffect(() => {
         if (typeof deckId !== "string") return
 
@@ -83,6 +89,24 @@ export default function PublicDeckPage() {
         }
     }, [deckId])
 
+    async function handleCopyAndEdit() {
+        if (!deck?.id || copying) return
+
+        try {
+            setCopying(true)
+            setCopyError(null)
+
+            const result = await copyDeckToMyDecks(deck.id)
+
+            await router.push(`/decks/${result.deckId}`) //route to edit page
+        } catch (err) {
+            console.error(err)
+            setCopyError("Failed to copy deck.")
+        } finally {
+            setCopying(false)
+        }
+    }
+
     const totalCards = useMemo(() => {
         return deck?.cards.reduce((total, card) => total + card.quantity, 0) ?? 0
     }, [deck])
@@ -121,12 +145,42 @@ export default function PublicDeckPage() {
             <div className="mx-auto max-w-7xl px-6 pb-10 pt-10">
                 <div className="mb-4 flex items-center justify-between">
                     <BackButton fallbackHref="/decks/discover" />
-                    <ShareDeckButton
-                        deckId={deck.id}
-                        visibility={deck.visibility}
-                        className="inline-flex h-10 items-center justify-center px-4 hover:cursor-pointer"
-                    />
+
+                    <div className="flex items-center gap-3">
+                        {status === "authenticated" && isOwner ? (
+                            <Link
+                                href={`/decks/${deck.id}`}
+                                className="inline-flex h-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white hover:bg-white/10"
+                            >
+                                Edit
+                            </Link>
+                        ) : null}
+
+                        {status === "authenticated" ? (
+                            <button
+                                type="button"
+                                onClick={handleCopyAndEdit}
+                                disabled={copying}
+                                className="inline-flex h-10 items-center justify-center rounded-lg border border-white/10 cursor-pointer bg-white/5 px-4 py-2 text-sm font-medium text-white hover:bg-white/10  disabled:opacity-60"
+                            >
+                                {copying ? "Copying" : "Copy"}
+                            </button>
+                        ) : null /*dont display if not authenticated*/}
+
+                        <ShareDeckButton
+                            deckId={deck.id}
+                            visibility={deck.visibility}
+                            className="inline-flex h-10 items-center justify-center px-4 hover:cursor-pointer"
+                        />
+                    </div>
                 </div>
+
+                {copyError ? (
+                    <div className="mb-4 rounded-2xl border border-red-500/20 bg-red-500/10 p-4">
+                        <p className="text-sm text-red-300">{copyError}</p>
+                    </div>
+                ) : null}
+
                 <div className="mb-8 rounded-2xl border border-white/10 bg-gray-900/60 p-6">
                     <div className="text-xs uppercase tracking-[0.22em] text-gray-400">
                         {deck.game}
