@@ -1,5 +1,5 @@
 /**
- * @file /api/deck/public
+ * @file /api/deck/public.ts
  * @description Handles public deck discovery and searching.
  * GET: Gets public decks with optional searching
  *

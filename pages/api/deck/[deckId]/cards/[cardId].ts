@@ -1,5 +1,5 @@
 /**
- * @file /api/deck/[deckId]/cards/[cardId]
+ * @file /api/deck/[deckId]/cards/[cardId].ts
  * @description Handles interactions for specific cards in a user deck.
  * GET: Gets a specific card from the deck
  * PATCH: Updates the quantity of a card in the deck

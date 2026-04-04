@@ -1,5 +1,5 @@
 /**
- * @file /api/filters/pokemon
+ * @file /api/filters/pokemon.ts
  * @description Gets Pokémon card filter options.
  * GET: Gets available Pokémon set filters either cached or from api
  *

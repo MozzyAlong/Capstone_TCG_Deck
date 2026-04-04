@@ -1,5 +1,5 @@
 /**
- * @file /api/profile/me
+ * @file /api/profile/me.ts
  * @description Gets the logged in users profile.
  * GET: Gets the logged in users profile
  *

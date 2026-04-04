@@ -1,5 +1,5 @@
 /**
- * @file /api/deck/[deckId]/public
+ * @file /api/deck/[deckId]/public.ts
  * @description Handles public access to a deck.
  * GET: Gets a deck by id if it is public, unlisted or owned by the logged in user
  *

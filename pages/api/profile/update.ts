@@ -1,5 +1,5 @@
 /**
- * @file /api/profile/update
+ * @file /api/profile/update.ts
  * @description Handles updates to the loggedin users profile.
  * POST: Updates the user profile fields
  *

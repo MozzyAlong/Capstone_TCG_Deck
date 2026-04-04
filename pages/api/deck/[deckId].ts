@@ -1,5 +1,5 @@
 /**
- * @file /api/deck/[deckId]
+ * @file /api/deck/[deckId].ts
  * @description Handles interactions on a deck owned by the logged in user.
  * GET: Gets a specific deck owned by the logged in user
  * PATCH: Update deck metadata

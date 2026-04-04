@@ -1,5 +1,5 @@
 /**
- * @file /api/deck
+ * @file /api/deck/index.ts
  * @description Handles user deck operations.
  * GET: Gets all decks owned by the logged in user.
  * POST: Create a new deck with validation.
