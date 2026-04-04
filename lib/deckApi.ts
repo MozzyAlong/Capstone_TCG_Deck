@@ -151,3 +151,38 @@ export async function fetchPublicDeck(deckId: string): Promise<DeckDetailsApiRes
 
     return (await response.json()) as DeckDetailsApiResponse
 }
+
+export async function copyDeckToMyDecks(sourceDeckId: string): Promise<{ deckId: string }> {
+    const sourceDeckResult = await fetchPublicDeck(sourceDeckId)
+
+    if (!("deck" in sourceDeckResult) || !sourceDeckResult.deck) {
+        throw new Error("error" in sourceDeckResult ? sourceDeckResult.error : "Failed to load source deck")
+    }
+
+    const sourceDeck = sourceDeckResult.deck
+
+    const createResult = await createDeckApiRequest({
+        title: `${sourceDeck.title ?? "Untitled Deck"} (Copy)`,
+        game: sourceDeck.game,
+        description: sourceDeck.description ?? "",
+        format: sourceDeck.format ?? "standard",
+        visibility: "private",
+    })
+
+    if (!("deckId" in createResult) || !createResult.deckId) {
+        throw new Error("error" in createResult ? createResult.error : "Failed to create copied deck")
+    }
+
+    const newDeckId = createResult.deckId
+
+    const replaceResult = await replaceDeckCards(
+        newDeckId,
+        Array.isArray(sourceDeck.cards) ? sourceDeck.cards : []
+    )
+
+    if (!("success" in replaceResult) || !replaceResult.success) {
+        throw new Error("error" in replaceResult ? replaceResult.error : "Failed to copy deck cards")
+    }
+
+    return { deckId: newDeckId }
+}
