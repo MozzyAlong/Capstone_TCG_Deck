@@ -1,3 +1,11 @@
+/**
+ * @file /api/deck/[deckId]/public
+ * @description Handles public access to a deck.
+ * GET: Gets a deck by id if it is public, unlisted or owned by the logged in user
+ *
+ * @author Cole de Ruiter
+ * @since 2026-04-04
+ */
 import type { NextApiRequest, NextApiResponse } from "next"
 import { ObjectId } from "mongodb"
 import clientPromise from "@/lib/db"

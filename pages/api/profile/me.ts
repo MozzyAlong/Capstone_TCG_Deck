@@ -1,3 +1,11 @@
+/**
+ * @file /api/profile/me
+ * @description Gets the logged in users profile.
+ * GET: Gets the logged in users profile
+ *
+ * @author Cole de Ruiter
+ * @since 2026-04-04
+ */
 import type { NextApiRequest, NextApiResponse } from "next"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "../auth/[...nextauth]"

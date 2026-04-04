@@ -1,3 +1,13 @@
+/**
+ * @file /api/deck/[deckId]/cards
+ * @description Handles interactions on all cards in a users deck.
+ * GET: Gets all cards in the deck
+ * PUT: Replaces the card list in the deck
+ * POST: Adds a new card to the deck or updates its quantity if its already in the deck
+ *
+ * @author Cole de Ruiter
+ * @since 2026-04-04
+ */
 import type { NextApiRequest, NextApiResponse } from "next"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "../../../auth/[...nextauth]"

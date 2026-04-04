@@ -1,3 +1,11 @@
+/**
+ * @file /api/profile/update
+ * @description Handles updates to the loggedin users profile.
+ * POST: Updates the user profile fields
+ *
+ * @author Cole de Ruiter
+ * @since 2026-04-04
+ */
 import type { NextApiRequest, NextApiResponse } from "next"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "../auth/[...nextauth]"

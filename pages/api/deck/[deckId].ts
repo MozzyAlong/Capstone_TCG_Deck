@@ -1,3 +1,13 @@
+/**
+ * @file /api/deck/[deckId]
+ * @description Handles interactions on a deck owned by the logged in user.
+ * GET: Gets a specific deck owned by the logged in user
+ * PATCH: Update deck metadata
+ * DELETE: Deletes the specified deck
+ *
+ * @author Cole de Ruiter
+ * @since 2026-04-04
+ */
 import type { NextApiRequest, NextApiResponse } from "next"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "../auth/[...nextauth]"

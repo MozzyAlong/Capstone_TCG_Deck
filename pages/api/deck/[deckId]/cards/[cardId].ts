@@ -1,3 +1,13 @@
+/**
+ * @file /api/deck/[deckId]/cards/[cardId]
+ * @description Handles interactions for specific cards in a user deck.
+ * GET: Gets a specific card from the deck
+ * PATCH: Updates the quantity of a card in the deck
+ * DELETE: Removes a card from the deck
+ *
+ * @author Cole de Ruiter
+ * @since 2026-04-04
+ */
 import type { NextApiRequest, NextApiResponse } from "next"
 import { getToken } from "next-auth/jwt"
 import { ObjectId } from "mongodb"

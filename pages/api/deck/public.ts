@@ -1,3 +1,11 @@
+/**
+ * @file /api/deck/public
+ * @description Handles public deck discovery and searching.
+ * GET: Gets public decks with optional searching
+ *
+ * @author Cole de Ruiter
+ * @since 2026-04-04
+ */
 import type { NextApiRequest, NextApiResponse } from "next"
 import { ObjectId } from "mongodb"
 import clientPromise from "@/lib/db"

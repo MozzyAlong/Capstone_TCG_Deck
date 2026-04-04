@@ -1,3 +1,12 @@
+/**
+ * @file /api/deck
+ * @description Handles user deck operations.
+ * GET: Gets all decks owned by the logged in user.
+ * POST: Create a new deck with validation.
+ *
+ * @author Cole de Ruiter
+ * @since 2026-04-04
+ */
 import type { NextApiRequest, NextApiResponse } from "next"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "../auth/[...nextauth]"

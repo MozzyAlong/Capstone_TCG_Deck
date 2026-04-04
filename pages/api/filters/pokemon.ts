@@ -1,3 +1,11 @@
+/**
+ * @file /api/filters/pokemon
+ * @description Gets Pokémon card filter options.
+ * GET: Gets available Pokémon set filters either cached or from api
+ *
+ * @author Cole de Ruiter
+ * @since 2026-04-04
+ */
 import type { NextApiRequest, NextApiResponse } from "next"
 import { getOrRefreshPokemonFilter } from "@/lib/tcg/filters/pokemonFilterCache"
 import type { FilterOption } from "@/lib/tcg/filters/types"
