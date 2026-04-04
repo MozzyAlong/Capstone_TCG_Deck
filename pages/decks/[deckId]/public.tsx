@@ -37,7 +37,7 @@ const fallbackImage = "https://www.uvdesigns.ca/wp-content/themes/uvdesigns2025/
 export default function PublicDeckPage() {
     const router = useRouter()
     const { deckId } = router.query
-    const { status } = useSession() // logged in status
+    const { data: session, status } = useSession()
 
     const [deck, setDeck] = useState<DeckDetails | null>(null)
     const [loading, setLoading] = useState(true)
@@ -45,7 +45,9 @@ export default function PublicDeckPage() {
     const [copying, setCopying] = useState(false)
     const [copyError, setCopyError] = useState<string | null>(null)
 
-    // deck info
+    const currentUserId = (session?.user as { id?: string } | undefined)?.id
+    const isOwner = !!deck?.authorId && !!currentUserId && deck.authorId === currentUserId
+
     useEffect(() => {
         if (typeof deckId !== "string") return
 
@@ -145,14 +147,23 @@ export default function PublicDeckPage() {
                     <BackButton fallbackHref="/decks/discover" />
 
                     <div className="flex items-center gap-3">
+                        {status === "authenticated" && isOwner ? (
+                            <Link
+                                href={`/decks/${deck.id}`}
+                                className="inline-flex h-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white hover:bg-white/10"
+                            >
+                                Edit
+                            </Link>
+                        ) : null}
+
                         {status === "authenticated" ? (
                             <button
                                 type="button"
                                 onClick={handleCopyAndEdit}
                                 disabled={copying}
-                                className="inline-flex h-10 items-center justify-center px-4 hover:cursor-pointer rounded-lg border border-white/10 bg-white/5 py-2 text-sm font-medium text-white hover:bg-white/10"
+                                className="inline-flex h-10 items-center justify-center rounded-lg border border-white/10 cursor-pointer bg-white/5 px-4 py-2 text-sm font-medium text-white hover:bg-white/10  disabled:opacity-60"
                             >
-                                {copying ? "Copying..." : "Copy & Edit"}
+                                {copying ? "Copying" : "Copy"}
                             </button>
                         ) : null /*dont display if not authenticated*/}
 

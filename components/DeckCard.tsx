@@ -43,13 +43,13 @@ export default function DeckCard({ deck, onDeleted }: DeckCardProps) {
                     </span>
                 </div>
                 <div className="mt-4 flex justify-end gap-2">
-                    <Link href={`/decks/${deck.id}/public`} className="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold border border-white/10 bg-white/5 text-white transition hover:bg-white/10">
+                    <Link href={`/decks/${deck.id}/public`} className="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold border border-white/10 bg-white/5 text-white hover:bg-white/10">
                         View
                     </Link>
-                    <Link href={`/decks/${deck.id}`} className="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold border border-white/10 bg-blue-500/20 hover:bg-blue-500/30 transition">
+                    <Link href={`/decks/${deck.id}`} className="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold border border-white/10 bg-blue-500/20 hover:bg-blue-500/30">
                         Edit
                     </Link>
-                    <button onClick={handleDelete} className="rounded-lg px-3 py-2 text-sm font-semibold border border-white/10 bg-red-500/20 hover:bg-red-500/30 transition cursor-pointer">
+                    <button onClick={handleDelete} className="rounded-lg px-3 py-2 text-sm font-semibold border border-white/10 bg-red-500/20 hover:bg-red-500/30 cursor-pointer">
                         Delete
                     </button>
                 </div>
