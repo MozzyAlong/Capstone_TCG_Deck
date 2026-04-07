@@ -4,6 +4,9 @@ import { ObjectId } from "mongodb"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "../api/auth/[...nextauth]"
 import Link from "next/link"
+import { useEffect, useState } from "react"
+import { fetchPublicDecksByOwner } from "@/lib/deckApi"
+import type { PublicDeckListItem } from "@/lib/deckTypes"
 
 type ProfileProps = {
     user: {
@@ -16,6 +19,56 @@ type ProfileProps = {
 }
 
 export default function Profile({ user, isOwner }: ProfileProps) {
+    const [publicDecks, setPublicDecks] = useState<PublicDeckListItem[]>([])
+    const [loadingDecks, setLoadingDecks] = useState(true)
+    const [deckError, setDeckError] = useState<string | null>(null)
+
+    useEffect(() => {
+        if (!user?.id) {
+            setLoadingDecks(false)
+            return
+        }
+
+        const ownerId = user.id
+        let isActive = true
+
+        async function loadPublicDecks() {
+            try {
+                setLoadingDecks(true)
+                setDeckError(null)
+
+                const result = await fetchPublicDecksByOwner(ownerId)
+
+                if (!isActive) return
+
+                if ("error" in result) {
+                    setDeckError(result.error)
+                    setPublicDecks([])
+                    return
+                }
+
+                setPublicDecks(result.decks)
+            } catch (error) {
+                console.error(error)
+
+                if (!isActive) return
+
+                setDeckError("Failed to load public decks.")
+                setPublicDecks([])
+            } finally {
+                if (isActive) {
+                    setLoadingDecks(false)
+                }
+            }
+        }
+
+        void loadPublicDecks()
+
+        return () => {
+            isActive = false
+        }
+    }, [user?.id])
+
     if (!user) {
         return (
             <div className="min-h-screen flex items-center justify-center text-white">
@@ -75,6 +128,52 @@ export default function Profile({ user, isOwner }: ProfileProps) {
                             <p className="text-gray-500 text-sm">
                                 This user has not added a bio yet.
                             </p>
+                        )}
+                    </div>
+
+                    <div>
+                        {/* section for users public decks */}
+                        <h2 className="text-sm uppercase tracking-wide text-gray-400 mb-4">
+                            Public Decks
+                        </h2>
+
+                        {loadingDecks ? (
+                            <p className="text-sm text-gray-400">Loading public decks...</p>
+                        ) : deckError ? (
+                            <p className="text-sm text-red-300">{deckError}</p>
+                        ) : publicDecks.length === 0 ? (
+                            <p className="text-gray-500 text-sm">
+                                This user has not shared any public decks yet.
+                            </p>
+                        ) : (
+                            /* small deck cards */
+                            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                                {publicDecks.map((deck) => (
+                                    <Link
+                                        key={deck.id}
+                                        href={`/decks/${deck.id}/public`}
+                                        className="rounded-2xl border border-white/10 bg-gray-900/50 p-5 hover:border-blue-400/40 hover:bg-gray-900/70"
+                                    >
+                                        <div className="text-xs uppercase text-gray-400">
+                                            {deck.game}
+                                        </div>
+
+                                        <h3 className="mt-2 text-lg font-semibold text-white">
+                                            {deck.title}
+                                        </h3>
+
+                                        <div className="mt-4 space-y-1 text-sm text-gray-300">
+                                            <p>Cards: {deck.cardCount}</p>
+                                            <p>
+                                                Updated:{" "}
+                                                {deck.updatedAt
+                                                    ? new Date(deck.updatedAt).toLocaleDateString()
+                                                    : "Unknown"}
+                                            </p>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
                         )}
                     </div>
                 </div>
