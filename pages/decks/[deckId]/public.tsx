@@ -48,6 +48,28 @@ export default function PublicDeckPage() {
     const currentUserId = (session?.user as { id?: string } | undefined)?.id
     const isOwner = !!deck?.authorId && !!currentUserId && deck.authorId === currentUserId
 
+    // Handle Likes
+    const [likeCount, setLikeCount] = useState(deck?.likes?.length ?? 0)
+    const [liked, setLiked] = useState(
+        deck?.likes?.includes((session?.user as any)?.id)
+        )
+
+        async function handleLike() {
+        if (!deck?.id || !session?.user) return
+
+        try {
+            const res = await fetch(`/api/deck/${deck.id}/like`, { method: "POST" })
+            const data = await res.json()
+
+            if (!data.error) {
+            setLiked(data.liked)
+            setLikeCount(data.count)
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
     // constants for comment handling
     const [commentText, setCommentText] = useState("")
     const [submitting, setSubmitting] = useState(false)
@@ -176,6 +198,15 @@ export default function PublicDeckPage() {
                             visibility={deck.visibility}
                             className="inline-flex h-10 items-center justify-center px-4 hover:cursor-pointer"
                         />
+                        <button
+                        onClick={handleLike}
+                        disabled={!session?.user}
+                        className={`px-4 py-2 rounded ${
+                            liked ? "bg-blue-600 text-white" : "bg-gray-600 text-gray-200"
+                        }`}
+                        >
+                        {liked ? "❤️ Liked" : "🤍 Like"} ({likeCount})
+                        </button>
                     </div>
                 </div>
 

@@ -39,6 +39,7 @@ export type DeckDetails = DeckInfo & {
     authorName: string | null
     commentCount: number
     comments: Array<{ _id?: string | null, userName: string, comment: string, createdAt?: Date | string }>
+    likes: string[]
 }
 
 export type DeckListApiResponse = { decks: DeckInfo[] } | ApiErrorResponse

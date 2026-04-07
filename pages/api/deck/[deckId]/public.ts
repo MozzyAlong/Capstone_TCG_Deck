@@ -94,6 +94,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                 comments: deck.comments ?? [],
                 authorId: ownerId ? ownerId.toHexString() : null,
                 authorName: author?.name ?? author?.email ?? null,
+                likes: deck.likes ?? [],
             },
         })
     } catch (error) {
