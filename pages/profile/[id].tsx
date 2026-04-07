@@ -131,9 +131,9 @@ export default function Profile({ user, isOwner }: ProfileProps) {
                         )}
                     </div>
 
-                    <div>
+                    <div className="border-t border-white/10">
                         {/* section for users public decks */}
-                        <h2 className="text-sm uppercase tracking-wide text-gray-400 mb-4">
+                        <h2 className="text-sm uppercase tracking-wide text-gray-400 my-4">
                             Public Decks
                         </h2>
 
