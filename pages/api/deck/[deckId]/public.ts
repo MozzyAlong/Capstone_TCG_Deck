@@ -90,6 +90,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                 cardCount: Array.isArray(deck.cards)
                     ? deck.cards.reduce((total, card) => total + (card.quantity ?? 1), 0)
                     : 0,
+                commentCount: Array.isArray(deck.comments) ? deck.comments.length : 0,
+                comments: deck.comments ?? [],
                 authorId: ownerId ? ownerId.toHexString() : null,
                 authorName: author?.name ?? author?.email ?? null,
             },

@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb"
+
 export type ApiErrorResponse = {
     error: string
 }
@@ -22,12 +24,21 @@ export type DeckCard = {
     raw: unknown
 }
 
+export type DeckComment = {
+    _id: ObjectId | string
+    userName: string
+    comment: string
+    createdAt?: Date | string
+}
+
 export type DeckDetails = DeckInfo & {
     description: string | null
     format: string | null
     cards: DeckCard[]
     authorId: string | null
     authorName: string | null
+    commentCount: number
+    comments: Array<{ _id?: string | null, userName: string, comment: string, createdAt?: Date | string }>
 }
 
 export type DeckListApiResponse = { decks: DeckInfo[] } | ApiErrorResponse

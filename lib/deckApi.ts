@@ -186,3 +186,20 @@ export async function copyDeckToMyDecks(sourceDeckId: string): Promise<{ deckId:
 
     return { deckId: newDeckId }
 }
+
+// Comment Submission
+export async function addDeckComment(
+    deckId: string,
+    comment: string
+): Promise<{ success?: boolean; error?: string }> {
+    const response = await fetch(
+        `${DECK_API_BASE_PATH}/${encodeURIComponent(deckId)}/comments`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ comment }),
+        }
+    )
+
+    return await response.json()
+}

@@ -31,6 +31,7 @@ type DeckInfo = {
     updatedAt?: Date | string | null
     cards?: Array<{ quantity?: number }>
     ownerId?: string | ObjectId | null
+    comments?: Array<{ userName: string, comment: string, createdAt?: Date | string }>
 }
 
 function toObjectId(value: unknown): ObjectId | null {
@@ -93,6 +94,7 @@ export default async function handler(
                 updatedAt: 1,
                 cards: 1,
                 ownerId: 1,
+                comments: 1
             })
             .toArray()
 
@@ -138,6 +140,8 @@ export default async function handler(
                 cardCount: Array.isArray(deck.cards)
                     ? deck.cards.reduce((total, card) => total + (card.quantity ?? 1), 0)
                     : 0,
+                commentCount: Array.isArray(deck.comments) ? deck.comments.length : 0,
+                comments: deck.comments ?? [],
                 authorId: ownerId ? ownerId.toHexString() : null,
                 authorName: author?.name ?? author?.email ?? null,
                 authorImage: author?.image ?? null,

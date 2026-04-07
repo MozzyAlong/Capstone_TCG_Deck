@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/router"
 import { useSession } from "next-auth/react"
 import Card from "@/components/Card"
-import { copyDeckToMyDecks, fetchPublicDeck } from "@/lib/deckApi"
+import { copyDeckToMyDecks, fetchPublicDeck, addDeckComment } from "@/lib/deckApi"
 import type { DeckCard, DeckDetails } from "@/lib/deckTypes"
 import type { SearchCard } from "@/lib/tcg/types"
 import BackButton from "@/components/BackButton"
@@ -47,6 +47,10 @@ export default function PublicDeckPage() {
 
     const currentUserId = (session?.user as { id?: string } | undefined)?.id
     const isOwner = !!deck?.authorId && !!currentUserId && deck.authorId === currentUserId
+
+    // constants for comment handling
+    const [commentText, setCommentText] = useState("")
+    const [submitting, setSubmitting] = useState(false)
 
     useEffect(() => {
         if (typeof deckId !== "string") return
@@ -244,6 +248,93 @@ export default function PublicDeckPage() {
                         ))}
                     </div>
                 )}
+                <br/>
+                <form
+                    onSubmit={async (e) => {
+                        e.preventDefault()
+
+                        if (!deck?.id || !commentText.trim()) return
+
+                        try {
+                            setSubmitting(true)
+
+                            const result = await addDeckComment(deck.id, commentText)
+
+                            if ("error" in result) {
+                                alert(result.error)
+                                return
+                            }
+
+                            // update UI instantly (no reload)
+                            setDeck((prev) =>
+                                prev
+                                    ? {
+                                        ...prev,
+                                        comments: [
+                                            ...(prev.comments ?? []),
+                                            {
+                                                userName: "You",
+                                                comment: commentText,
+                                                createdAt: new Date().toISOString(),
+                                            },
+                                        ],
+                                    }
+                                    : prev
+                            )
+
+                            setCommentText("")
+                        } catch (err) {
+                            console.error(err)
+                        } finally {
+                            setSubmitting(false)
+                        }
+                    }}
+                    className="rounded-2xl border border-white/10 bg-gray-900/50 p-10 text-center"
+                >
+                    <label>Comment: </label>
+                    <br/>
+                    <textarea
+                        className="rounded-2xl border border-white/10 bg-gray-600/50"
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
+                        rows={5}
+                        cols={100}
+                    />
+                    <br/>
+                    <input
+                        className="rounded-2xl border border-white/10 bg-gray-600/50"
+                        type="submit"
+                        value={submitting ? "Posting..." : "Publish Comment"}
+                    />
+                </form>
+                <div id="comments" className="mt-6 space-y-4">
+                    {!deck.comments || deck.comments.length === 0 ? (
+                        <p className="text-gray-400 text-sm">No comments yet.</p>
+                    ) : (
+                        deck.comments.map((c, index) => (
+                            <div
+                                key={index}
+                                className="rounded-xl border border-white/10 bg-gray-800/60 p-4 text-left"
+                            >
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="font-medium text-white">
+                                        {c.userName}
+                                    </span>
+
+                                    {c.createdAt && (
+                                        <span className="text-xs text-gray-400">
+                                            {new Date(c.createdAt).toLocaleDateString()}
+                                        </span>
+                                    )}
+                                </div>
+
+                                <p className="text-gray-200 whitespace-pre-wrap">
+                                    {c.comment}
+                                </p>
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
         </div>
     )
