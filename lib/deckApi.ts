@@ -152,6 +152,11 @@ export async function fetchPublicDeck(deckId: string): Promise<DeckDetailsApiRes
     return (await response.json()) as DeckDetailsApiResponse
 }
 
+export async function fetchPublicDecksByOwner(ownerId: string): Promise<PublicDeckSearchApiResponse> {
+    const response = await fetch(`/api/deck/public/${encodeURIComponent(ownerId)}`)
+    return (await response.json()) as PublicDeckSearchApiResponse
+}
+
 export async function copyDeckToMyDecks(sourceDeckId: string): Promise<{ deckId: string }> {
     const sourceDeckResult = await fetchPublicDeck(sourceDeckId)
 
