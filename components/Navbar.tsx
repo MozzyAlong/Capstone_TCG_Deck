@@ -20,6 +20,8 @@ export default function Navbar({ links }: { links: string[] }) {
                                 ? "/"
                                 : link === "Discover"
                                     ? "/decks/discover"
+                                    : link === "Create Deck AI"
+                                        ? "/DeckCreationAI"
                                     : `/${link.toLowerCase()}`
                         const isActive = pathname === href
 
