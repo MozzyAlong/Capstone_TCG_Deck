@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 export default function Layout({ children }: PropsWithChildren) {
     return (
         <div className="app-container">
-            <Navbar links={['CyberTCG', 'About', 'Decks','Discover','Create Deck AI', 'Search']}/>
+            <Navbar links={['CyberTCG', 'About', 'Decks','Discover','Create Deck AI']}/>
             <main className="content">{children}</main>
             <Footer />
         </div>
