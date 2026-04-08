@@ -32,6 +32,7 @@ function capitalizeFirstLetter(str: string) {
     return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
+
 const fallbackImage = "https://www.uvdesigns.ca/wp-content/themes/uvdesigns2025/img/no_image.jpg"
 
 export default function PublicDeckPage() {
@@ -48,6 +49,46 @@ export default function PublicDeckPage() {
     const currentUserId = (session?.user as { id?: string } | undefined)?.id
     const isOwner = !!deck?.authorId && !!currentUserId && deck.authorId === currentUserId
 
+    async function handleDeleteComment(commentId: string) {
+    if (!deck?.id || !session?.user) return
+
+    if (!confirm("Are you sure you want to delete your comment?")) return
+
+    try {
+        const res = await fetch(
+            `/api/deck/${deck.id}/comments?commentId=${commentId}`,
+            { method: "DELETE" }
+        )
+
+        const data = await res.json()
+
+        if (!data.error) {
+            // remove comment locally
+            setDeck((prev) =>
+                prev
+                    ? {
+                          ...prev,
+                          comments: prev.comments.filter((c) => c._id !== commentId),
+                      }
+                    : prev
+            )
+        } else {
+            alert(data.error)
+        }
+    } catch (err) {
+        console.error(err)
+    }
+}
+    // Load Likes upon Loading
+    useEffect(() => {
+        if (!deck) return
+
+        setLikeCount(deck.likes?.length ?? 0)
+
+        const userId = (session?.user as any)?.id
+        setLiked(userId ? deck.likes?.includes(userId) : false)
+    }, [deck, session])
+
     // Handle Likes
     const [likeCount, setLikeCount] = useState(deck?.likes?.length ?? 0)
     const [liked, setLiked] = useState(
@@ -58,7 +99,7 @@ export default function PublicDeckPage() {
         if (!deck?.id || !session?.user) return
 
         try {
-            const res = await fetch(`/api/deck/${deck.id}/like`, { method: "POST" })
+            const res = await fetch(`/api/deck/${deck.id}/likes`, { method: "POST" })
             const data = await res.json()
 
             if (!data.error) {
@@ -305,6 +346,7 @@ export default function PublicDeckPage() {
                                             ...(prev.comments ?? []),
                                             {
                                                 userName: "You",
+                                                userId: (session?.user as any)?.id,
                                                 comment: commentText,
                                                 createdAt: new Date().toISOString(),
                                             },
@@ -344,7 +386,7 @@ export default function PublicDeckPage() {
                     ) : (
                         deck.comments.map((c, index) => (
                             <div
-                                key={index}
+                                key={c._id}
                                 className="rounded-xl border border-white/10 bg-gray-800/60 p-4 text-left"
                             >
                                 <div className="flex justify-between items-center mb-2">
@@ -352,11 +394,21 @@ export default function PublicDeckPage() {
                                         {c.userName}
                                     </span>
 
-                                    {c.createdAt && (
-                                        <span className="text-xs text-gray-400">
-                                            {new Date(c.createdAt).toLocaleDateString()}
-                                        </span>
-                                    )}
+                                    <div className="flex items-center gap-3">
+                                        {c.createdAt && (
+                                            <span className="text-xs text-gray-400">
+                                                {new Date(c.createdAt).toLocaleDateString()}
+                                            </span>
+                                        )}
+                                        {(session?.user as any)?.id === c.userId && (
+                                            <button
+                                                onClick={() => handleDeleteComment(c._id as any)}
+                                                className="text-red-400 text-xs hover:text-red-300"
+                                            >
+                                                Delete
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <p className="text-gray-200 whitespace-pre-wrap">

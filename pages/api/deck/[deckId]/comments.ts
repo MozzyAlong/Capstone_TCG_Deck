@@ -23,13 +23,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const client = await clientPromise
             const db = client.db()
 
+            const userId = (session.user as any).id
+
             // Remove only the comment that belongs to this user
             const result = await db.collection("decks").updateOne(
                 { _id: new ObjectId(deckId as string) },
                 { $pull: { 
                     comments: { 
                         _id: new ObjectId(commentId as string), 
-                        userName: session.user.name ?? session.user.email
+                        userId: userId,
                     } 
                 } }
             )
@@ -69,6 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const newComment = {
             _id: new ObjectId(),
+            userId: (session.user as any).id,
             userName: session.user.name ?? session.user.email ?? "Anonymous", // get username
             comment,
             createdAt: new Date(),

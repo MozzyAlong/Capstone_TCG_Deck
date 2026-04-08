@@ -38,7 +38,7 @@ export type DeckDetails = DeckInfo & {
     authorId: string | null
     authorName: string | null
     commentCount: number
-    comments: Array<{ _id?: string | null, userName: string, comment: string, createdAt?: Date | string }>
+    comments: Array<{ _id?: string | null, userId: string, userName: string, comment: string, createdAt?: Date | string }>
     likes: string[]
 }
 
