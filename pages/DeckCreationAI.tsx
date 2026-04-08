@@ -109,7 +109,7 @@ async function handleAddToDecks() {
             id: `${card.name}-${index}`,
             name: card.name,
             quantity: card.count,
-            image: card.image || "",
+            image: card.image?.replace("/low.webp", "") || "",
             raw: {
                 reason: card.reason,
             },
