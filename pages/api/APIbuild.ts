@@ -41,99 +41,121 @@ async function getCardImage(cardName: string) {
         let results = []
 
         if (setName) {
-            const firstQuery = `name:"${cleanName}" set.name:"${setName}"`
+            const firstQuery = cleanName
             response = await fetch(
-                `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(firstQuery)}&pageSize=10&select=id,name,number,set,images`,
-                {
-                    headers: {
-                        ...(process.env.POKEMONTCG_API_KEY
-                            ? { "X-Api-Key": process.env.POKEMONTCG_API_KEY }
-                            : {}),
-                    },
-                }
+                `https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(firstQuery)}`
             )
 
             if (response.ok) {
                 data = await response.json()
-                results = data?.data || []
+                results = data || []
 
                 let i = 0
                 while (i < results.length) {
                     const current = results[i]
-                    const resultName = (current.name || "").replace(/\s+/g, " ").replace(/[–—]/g, "-").trim().toLowerCase()
-                    const resultSet = (current.set?.name || "").replace(/\s+/g, " ").replace(/[–—]/g, "-").trim().toLowerCase()
+                    const resultName = (current.name || "")
+                        .replace(/\s+/g, " ")
+                        .replace(/[–—]/g, "-")
+                        .trim()
+                        .toLowerCase()
 
-                    if (resultName === cleanName.toLowerCase() && resultSet === setName.toLowerCase()) {
-                        return current.images?.small || ""
+                    if (resultName === cleanName.toLowerCase()) {
+                        return current.image ? `${current.image}/low.webp` : ""
                     }
 
                     i = i + 1
                 }
 
                 if (results.length > 0) {
-                    return results[0].images?.small || ""
+                    return results[0].image ? `${results[0].image}/low.webp` : ""
                 }
             }
         }
 
-        const secondQuery = `name:"${cleanName}"`
+        const secondQuery = cleanName
         response = await fetch(
-            `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(secondQuery)}&pageSize=10&select=id,name,number,set,images`,
-            {
-                headers: {
-                    ...(process.env.POKEMONTCG_API_KEY
-                        ? { "X-Api-Key": process.env.POKEMONTCG_API_KEY }
-                        : {}),
-                },
-            }
+            `https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(secondQuery)}`
         )
 
         if (response.ok) {
             data = await response.json()
-            results = data?.data || []
+            results = data || []
+
+            console.log(
+                "TCGdex matches for",
+                cleanName,
+                results.map((card: any) => ({
+                    name: card.name,
+                    image: card.image,
+                }))
+            )
 
             let i = 0
             while (i < results.length) {
                 const current = results[i]
-                const resultName = (current.name || "").replace(/\s+/g, " ").replace(/[–—]/g, "-").trim().toLowerCase()
+                const resultName = (current.name || "")
+                    .replace(/\s+/g, " ")
+                    .replace(/[–—]/g, "-")
+                    .trim()
+                    .toLowerCase()
 
-                if (resultName === cleanName.toLowerCase()) {
-                    return current.images?.small || ""
+                if (resultName === cleanName.toLowerCase() && current.image) {
+                    return `${current.image}/low.webp`
                 }
 
                 i = i + 1
             }
 
-            if (results.length > 0) {
-                return results[0].images?.small || ""
+            i = 0
+            while (i < results.length) {
+                const current = results[i]
+                const resultName = (current.name || "")
+                    .replace(/\s+/g, " ")
+                    .replace(/[–—]/g, "-")
+                    .trim()
+                    .toLowerCase()
+
+                if (
+                    (resultName.includes(cleanName.toLowerCase()) ||
+                        cleanName.toLowerCase().includes(resultName)) &&
+                    current.image
+                ) {
+                    return `${current.image}/low.webp`
+                }
+
+                i = i + 1
+            }
+
+            i = 0
+            while (i < results.length) {
+                const current = results[i]
+
+                if (current.image) {
+                    return `${current.image}/low.webp`
+                }
+
+                i = i + 1
             }
         }
 
-        const thirdQuery = `name:${cleanName}`
+        const thirdQuery = cleanName
         response = await fetch(
-            `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(thirdQuery)}&pageSize=10&select=id,name,number,set,images`,
-            {
-                headers: {
-                    ...(process.env.POKEMONTCG_API_KEY
-                        ? { "X-Api-Key": process.env.POKEMONTCG_API_KEY }
-                        : {}),
-                },
-            }
+            `https://api.tcgdex.net/v2/en/cards?name=${encodeURIComponent(thirdQuery)}`
         )
 
         if (response.ok) {
             data = await response.json()
-            results = data?.data || []
+            results = data || []
 
             if (results.length > 0) {
-                return results[0].images?.small || ""
+                return results[0].image ? `${results[0].image}/low.webp` : ""
             }
         }
 
-        console.warn("No image found for:", cardName)
+        console.warn("No image found for the card listed:", cardName)
         return ""
     } catch (error) {
-        console.error("Image lookup failed for:", cardName, error)
+        console.error("Failed to find an image for the card listed:", cardName, error)
         return ""
     }
 }
@@ -151,10 +173,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
         const fullPrompt = `
-Build a Pokémon TCG deck from the user's idea.
+You are an expert TCG deck builder and will build decks based on the users request.
 
 Rules:
 - Only use real Pokémon cards.
+- Use only cards from the Pokémon TCG.
 - Do not make up cards.
 - Give a short reason for each card.
 - Return JSON only.
