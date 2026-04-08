@@ -239,15 +239,18 @@ export default function PublicDeckPage() {
                             visibility={deck.visibility}
                             className="inline-flex h-10 items-center justify-center px-4 hover:cursor-pointer"
                         />
-                        <button
-                        onClick={handleLike}
-                        disabled={!session?.user}
-                        className={`px-4 py-2 rounded ${
-                            liked ? "bg-blue-600 text-white" : "bg-gray-600 text-gray-200"
-                        }`}
-                        >
-                        {liked ? "❤️ Liked" : "🤍 Like"} ({likeCount})
-                        </button>
+                        {status === "authenticated" ? (
+                            <button
+                                onClick={handleLike}
+                                className={`px-3 py-2 text-sm font-medium rounded-lg cursor-pointer ${
+                                    liked
+                                        ? "bg-blue-600 text-white hover:bg-blue-500"
+                                        : "bg-gray-600 text-gray-200 hover:bg-gray-500"
+                                }`}
+                            >
+                                {liked ? "❤️ Liked" : "🤍 Like"} ({likeCount})
+                            </button>
+                        ) : null}
                     </div>
                 </div>
 
@@ -364,10 +367,10 @@ export default function PublicDeckPage() {
                     }}
                     className="rounded-2xl border border-white/10 bg-gray-900/50 p-10 text-center"
                 >
-                    <label>Comment: </label>
+                    <label>Add a Comment</label>
                     <br/>
                     <textarea
-                        className="rounded-2xl border border-white/10 bg-gray-600/50"
+                        className="rounded-lg p-2 border border-white/10 bg-gray-600/50"
                         value={commentText}
                         onChange={(e) => setCommentText(e.target.value)}
                         rows={5}
@@ -375,7 +378,7 @@ export default function PublicDeckPage() {
                     />
                     <br/>
                     <input
-                        className="rounded-2xl border border-white/10 bg-gray-600/50"
+                        className="rounded-lg mt-1.5 px-3 py-2 cursor-pointer border border-white/10 bg-gray-600/50 hover:bg-gray-500/50"
                         type="submit"
                         value={submitting ? "Posting..." : "Publish Comment"}
                     />
@@ -398,7 +401,7 @@ export default function PublicDeckPage() {
                                         {(session?.user as any)?.id === c.userId && (
                                             <button
                                                 onClick={() => handleDeleteComment(c._id as any)}
-                                                className="text-red-400 text-xs hover:text-red-300"
+                                                className="text-red-400 text-xs hover:text-red-300 cursor-pointer"
                                             >
                                                 Delete
                                             </button>
