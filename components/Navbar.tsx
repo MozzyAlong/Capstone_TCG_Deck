@@ -16,7 +16,7 @@ export default function Navbar({ links }: { links: string[] }) {
                 <div className="flex gap-4">
                     {links.map((link) => {
                         const href =
-                            link === "Deck AI"
+                            link === "CyberTCG"
                                 ? "/"
                                 : link === "Discover"
                                     ? "/decks/discover"
