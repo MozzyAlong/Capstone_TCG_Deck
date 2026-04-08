@@ -21,7 +21,7 @@ export default function HomePage() {
                 <Link
                     className="inline-flex gap-1 bg-blue-500 rounded-md px-8 pr-6 py-2 mt-1 md:text-lg text-sm font-medium text-gray-300 transition hover:bg-blue-400 hover:text-white"
                     href="/decks/discover">
-                    View a Card Collection
+                    Discover Decks
                     <ArrowUpRightIcon className="w-4 h-4" />
                 </Link>
             </div>
