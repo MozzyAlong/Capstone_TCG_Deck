@@ -15,17 +15,7 @@ export default function BackButton({
     const router = useRouter()
 
     function handleBack() {
-        const canGoBack = window.history.length > 1
-        const previousPage = document.referrer
-
-        // check if previous page is from this site
-        const fromThisSite = previousPage && previousPage.startsWith(window.location.origin)
-
-        if (canGoBack && fromThisSite) {
-            router.back()
-        } else {
-            router.push(fallbackHref)
-        }
+        router.back()
     }
 
     return (

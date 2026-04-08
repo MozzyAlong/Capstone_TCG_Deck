@@ -148,7 +148,7 @@ export default function PublicDeckPage() {
         <div className="min-h-screen text-white">
             <div className="mx-auto max-w-7xl px-6 pb-10 pt-10">
                 <div className="mb-4 flex items-center justify-between">
-                    <BackButton fallbackHref="/decks/discover" />
+                    <BackButton />
 
                     <div className="flex items-center gap-3">
                         {status === "authenticated" && isOwner ? (
