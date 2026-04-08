@@ -395,11 +395,6 @@ export default function PublicDeckPage() {
                                     </span>
 
                                     <div className="flex items-center gap-3">
-                                        {c.createdAt && (
-                                            <span className="text-xs text-gray-400">
-                                                {new Date(c.createdAt).toLocaleDateString()}
-                                            </span>
-                                        )}
                                         {(session?.user as any)?.id === c.userId && (
                                             <button
                                                 onClick={() => handleDeleteComment(c._id as any)}
@@ -407,6 +402,11 @@ export default function PublicDeckPage() {
                                             >
                                                 Delete
                                             </button>
+                                        )}
+                                        {c.createdAt && (
+                                            <span className="text-xs text-gray-400">
+                                                {new Date(c.createdAt).toLocaleDateString()}
+                                            </span>
                                         )}
                                     </div>
                                 </div>
