@@ -13,7 +13,8 @@ import type {
     SingleDeckCardApiResponse,
     UpdateDeckPayload,
     DeckCardUpdateApiResponse,
-    PublicDeckSearchApiResponse
+    PublicDeckSearchApiResponse,
+    AddDeckCommentResult
 } from "@/lib/deckTypes"
 
 const DECK_API_BASE_PATH = "/api/deck"
@@ -196,15 +197,12 @@ export async function copyDeckToMyDecks(sourceDeckId: string): Promise<{ deckId:
 export async function addDeckComment(
     deckId: string,
     comment: string
-): Promise<{ success?: boolean; error?: string }> {
-    const response = await fetch(
-        `${DECK_API_BASE_PATH}/${encodeURIComponent(deckId)}/comments`,
-        {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ comment }),
-        }
-    )
+): Promise<AddDeckCommentResult> {
+    const res = await fetch(`/api/deck/${deckId}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ comment }),
+    })
 
-    return await response.json()
+    return res.json()
 }

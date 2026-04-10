@@ -25,11 +25,16 @@ export type DeckCard = {
 }
 
 export type DeckComment = {
-    _id: ObjectId | string
+    _id?: string
+    userId: string
     userName: string
     comment: string
-    createdAt?: Date | string
+    createdAt?: string | Date
 }
+
+export type AddDeckCommentResult =
+    | { comment: DeckComment }
+    | { error: string }
 
 export type DeckDetails = DeckInfo & {
     description: string | null
@@ -125,3 +130,5 @@ export type PublicDeckSearchApiResponse =
         page: number
         totalPages: number
     } | ApiErrorResponse
+
+

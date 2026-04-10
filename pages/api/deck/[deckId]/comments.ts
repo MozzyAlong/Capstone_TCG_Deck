@@ -82,7 +82,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             { $push: { comments: newComment } }
         )
 
-        return res.status(200).json({ success: true })
+        return res.status(200).json({ success: true, comment: newComment })
     } catch (err) {
         console.error(err)
         return res.status(500).json({ error: "Failed to add comment" })

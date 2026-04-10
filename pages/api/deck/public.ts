@@ -22,6 +22,18 @@ type UserInfo = {
     email?: string | null
 }
 
+type DeckComment = {
+    _id: string
+    userId: string
+    userName: string
+    comment: string
+    createdAt: string
+}
+
+type AddDeckCommentResult =
+    | { comment: DeckComment }
+    | { error: string }
+
 type DeckInfo = {
     _id: ObjectId
     title?: string

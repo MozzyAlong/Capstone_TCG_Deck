@@ -183,6 +183,15 @@ export default function PublicDeckPage() {
         return [...deck.cards].sort((a, b) => a.name.localeCompare(b.name))
     }, [deck])
 
+    const sortedComments = useMemo(() => {
+        if (!deck?.comments) return []
+        return [...(deck.comments ?? [])].sort(
+            (a, b) =>
+                new Date(b.createdAt ?? 0).getTime() -
+                new Date(a.createdAt ?? 0).getTime()
+        )
+        }, [deck?.comments])
+
     if (loading) {
         return (
             <div className="min-h-screen text-white">
@@ -345,15 +354,7 @@ export default function PublicDeckPage() {
                                 prev
                                     ? {
                                         ...prev,
-                                        comments: [
-                                            ...(prev.comments ?? []),
-                                            {
-                                                userName: "You",
-                                                userId: (session?.user as any)?.id,
-                                                comment: commentText,
-                                                createdAt: new Date().toISOString(),
-                                            },
-                                        ],
+                                        comments: [result.comment, ...(prev.comments ?? [])],
                                     }
                                     : prev
                             )
@@ -387,7 +388,7 @@ export default function PublicDeckPage() {
                     {!deck.comments || deck.comments.length === 0 ? (
                         <p className="text-gray-400 text-sm">No comments yet.</p>
                     ) : (
-                        deck.comments.map((c, index) => (
+                        sortedComments.map((c, index) => (
                             <div
                                 key={c._id}
                                 className="rounded-xl border border-white/10 bg-gray-800/60 p-4 text-left"
